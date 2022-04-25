@@ -45,16 +45,19 @@ class ChainUtils:
         return sk
 
     @staticmethod
-    def hash(string_to_hash: str):
+    def hash(data_to_hash: str):
         """sha256 hashing function
 
         Args:
-            string_to_hash (str): string to be hashed
+            string_to_hash (str | dict): string/dict to be hashed
 
         Returns:
             (_Hash object): object representing calculated hash from given `string_to_hash`
         """
-        data = dumps(string_to_hash)
+        if (isinstance(data_to_hash, dict)):
+            data = dumps(data_to_hash)
+        else:
+            data = data_to_hash.encode('utf-8')
         #encoded_string = string_to_hash.encode('utf-8')
         return sha256(data)
 
@@ -70,13 +73,16 @@ class ChainUtils:
         Returns:
             Bool: True when the signature is valid, False otherwise
         """
-        
+
+        if not (isinstance(data, str) or  isinstance(data, dict)):
+            raise ValueError('Need a dict or string, got {0!r}'.format(data))
         try:
             data_bytes = dumps(data)
             public_key.verify(signature, data_bytes, hashfunc=sha256)
             return True
         except BadSignatureError as e:
             print(e)
+            #TODO MISSING RAISE HANDLING?????
             return False
 
     @staticmethod

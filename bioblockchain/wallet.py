@@ -5,12 +5,22 @@ from bioblockchain.utils import ChainUtils
 from bioblockchain.transaction import Transaction
 from pickle import dumps
 
+"""
+The wallet holds the public key and key pair. 
+It is also responsible for signing data hashes and creating signed transactions.
+"""
 
 class Wallet:
     def __init__(self, secret):
         self.secret = secret
         self._private_key = ChainUtils.generate_key_from_seed(self.secret)
         self._verif_key = self.private_key.get_verifying_key()
+
+    def __eq__(self, __o: object) -> bool:
+        #TODO secrets should probably be handled differently
+        if (isinstance(__o, Wallet)):
+            return self.secret == __o.secret and self._private_key == __o._private_key
+        return False
 
     def __str__(self) -> str:
         return (f"Wallet - Public Key: {ChainUtils.string_from_verifkey(self.verif_key)}")

@@ -1,5 +1,5 @@
 #maximum number of transactions that can be present in a block and transaction pool
-TRANSACTION_THRESHOLD = 10
+TRANSACTION_THRESHOLD = 1
 
 #total node count in the network
 NUMBER_OF_NODES = 3

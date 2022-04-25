@@ -5,6 +5,8 @@
     "version": "0.2.0",
     "configurations": [
 
+
+
         {
             "name": "Test",
             "type": "python",
@@ -13,10 +15,17 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Bioblockchain",
+            "name": "bioblockchain",
             "type": "python",
             "request": "launch",
-            "program": "bioblockchain.py",
+            "module": "bioblockchain.blockchain",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "pbft",
+            "type": "python",
+            "request": "launch",
+            "module": "bioblockchain.pbft",
             "console": "integratedTerminal"
         }
     ]

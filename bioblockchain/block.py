@@ -1,6 +1,6 @@
 from hashlib import sha256
 from os import stat_result
-from utils import ChainUtils
+from bioblockchain.utils import ChainUtils
 from datetime import datetime
 from bioblockchain.wallet import Wallet
 import json
@@ -11,7 +11,7 @@ class Block:
 
     def __init__(self, timestamp, previous_hash, current_hash, data, proposer, signature, seq_number):
         self.timestamp = timestamp
-        self.previous_hash = previous_hash
+        self._previous_hash = previous_hash
         self._hash = current_hash
         self.data = data
         self.proposer = proposer
@@ -20,17 +20,25 @@ class Block:
 
     @property
     def hash(self):
-        return self._private_key
+        return self._hash
 
-    @hash.setter
-    def hash(self, key):
-        self._private_key = key
+    @property
+    def hash_hexdigest(self):
+        return self._hash.hexdigest()
+    
+    @property
+    def previous_hash_hexdigest(self):
+        return self._previous_hash.hexdigest()
+
+    @property
+    def previous_hash(self):
+        return self._previous_hash
     
     def __str__(self):
         return f"""
         - - - - - - - - - - - - - - - - - Block - - - - - - - - - - - - - - - - - - - 
         Timestamp   : {self.timestamp}
-        Last Hash   : {self.previous_hash.hexdigest()}
+        Last Hash   : {self._previous_hash.hexdigest()}
         Hash        : {self._hash.hexdigest()}
         Data        : {self.data}
         Proposer    : {ChainUtils.string_from_verifkey(self.proposer) if type(self.proposer ) != str else self.proposer}
@@ -47,12 +55,13 @@ class Block:
         Returns:
             Block object: genesis block
         """
-        previous_hash = sha256("This is the genesis of super duper biometric blockchain".encode())
+        proposer = Wallet("B!0BL0CKCH41N")
+        previous_hash = ChainUtils.hash("This is the previous hash for genesis block of super duper biometric system's blockchain")
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         content = Block.block_content_to_json(now, previous_hash, [])
         hash = ChainUtils.hash(content)
-        return Block(datetime.now(), ChainUtils.hash("genesis hash"), hash, 
-                     [], "B!0BL0CKCH41N", b"signature", 0)
+        return Block(now, previous_hash, hash, 
+                     [], proposer.verif_key, proposer.sign(content), 0)
     
     
     @staticmethod
@@ -74,10 +83,11 @@ class Block:
         content = Block.block_content_to_json(timestamp, previous_hash, data)
         block_hash = ChainUtils.hash(content)
         signature = proposer_wallet.sign(content)
+        seq_number = previous_block.seq_number + 1
         return Block(timestamp, previous_hash, block_hash, 
-                     data, proposer, signature, previous_block.seq_number + 1)
+                     data, proposer, signature, seq_number)
 
-    # signs the passed block using the passed wallet instance
+    # signs the block using the wallet instance
     @staticmethod
     def sign_block_hash(hash, wallet):
         return wallet.sign(hash)
@@ -98,8 +108,10 @@ class Block:
                     "previous_hash": previous_hash.hexdigest(), 
                     "data": ChainUtils.transactionlist_to_json(data)}
 
-    def block_hash(self):
-        pass
+    @staticmethod
+    def block_hash(block):
+        content = Block.block_content_to_json(block.timestamp, block.previous_hash, block.data)
+        return ChainUtils.hash(content)
 
     def verify_block(self):
         """verifies block
@@ -110,10 +122,10 @@ class Block:
         return ChainUtils.verify_signature(
             self.proposer,
             self.signature,
-            Block.block_content_to_json(self.timestamp, self.previous_hash, self.data)
+            Block.block_content_to_json(self.timestamp, self._previous_hash, self.data)
         )
 
-    def verify_proposer(self, block, proposer):
-        return block.proposer == proposer
+    def verify_proposer(self, proposer_wallet: Wallet):
+        return (self.proposer == proposer_wallet.verif_key)
 
     

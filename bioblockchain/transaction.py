@@ -4,6 +4,11 @@ from json import dumps
 
 
 # TODO daj bacha na tie prevody stringov a adries(wallet)
+# TODO Uprav túto triedu pre účely bakalarskej prace
+# TODO skontroluj co je treba podpisovat ci ten content alebo uz len hash z contentu
+"""
+
+"""
 
 class Transaction:
 
@@ -15,7 +20,7 @@ class Transaction:
         self.signature = wallet.sign(self.payload)
 
     # verifies wether the transaction is valid
-    def verify_transaction(transaction):
+    def verify_transaction(self):
         """test
 
         Args:
@@ -24,7 +29,7 @@ class Transaction:
         Returns:
             [type]: [description]
         """
-        return ChainUtils.verify_signature(transaction.sender, transaction.signature, ChainUtils.hash(transaction.payload))
+        return ChainUtils.verify_signature(self.sender, self.signature, self.payload)
 
     # transforms class variables into json 
     def toJSON(self):
@@ -37,7 +42,7 @@ class Transaction:
         # print(self.hash)
         # print(self.signature.hex())
         # print("------- JSON ------")
-        return dumps(content)
+        return content
 
     # prints formatted class 
     def __str__(self) -> str:
