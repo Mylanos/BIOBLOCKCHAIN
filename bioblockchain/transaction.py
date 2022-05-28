@@ -1,3 +1,4 @@
+from unicodedata import name
 from bioblockchain.utils import TimeUtils, ChainUtils
 from datetime import datetime
 from json import dumps
@@ -17,7 +18,16 @@ class Transaction:
         self.sender = wallet.verif_key
         self.payload = {"data": data, "timestamp": TimeUtils.my_date()}
         self.hash = ChainUtils.hash(dumps(self.payload))
-        self.signature = wallet.sign(self.payload)
+        self.signature = wallet.sign_data(self.payload)
+        
+        """
+        self.hash_hex = transaction.hash_hexdigest
+        self.block_hash = transaction.hash
+        self.public_key = wallet._verif_key
+        self.content = {"block_hash": self.hash_hex, 
+                        "public_key": wallet._verif_key}
+        self.signature = wallet.sign(self.content)
+        """
 
     # verifies wether the transaction is valid
     def verify_transaction(self):
@@ -30,6 +40,10 @@ class Transaction:
             [type]: [description]
         """
         return ChainUtils.verify_signature(self.sender, self.signature, self.payload)
+
+    @property
+    def hash_hexdigest(self):
+        return self.hash.hexdigest()
 
     # transforms class variables into json 
     def toJSON(self):
@@ -44,6 +58,9 @@ class Transaction:
         # print("------- JSON ------")
         return content
 
+    def get_type(self):
+        return self.payload["data"]["process_type"]
+
     # prints formatted class 
     def __str__(self) -> str:
         return (f"""
@@ -53,3 +70,6 @@ class Transaction:
         Hash: {self.hash}
         Signature: {self.signature.hex()}
         """)
+
+    def get_data(self):
+        return self.payload["data"]

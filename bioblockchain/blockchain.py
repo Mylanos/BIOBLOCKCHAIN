@@ -1,7 +1,6 @@
 from re import S
 from bioblockchain.block import Block
 from bioblockchain.transaction import Transaction
-from bioblockchain.validators import Validators
 from ecdsa import NIST384p, keys
 import bioblockchain.config as config
 from bioblockchain.wallet import Wallet
@@ -9,6 +8,7 @@ from random import randint
 from secrets import compare_digest
 
 #TODO argparse
+#TODO implement search for the transactions for given wallet blockchain
 
 class Blockchain:
     def __init__(self):
@@ -60,9 +60,7 @@ if __name__ == "__main__":
     stephan = Wallet("Stephan's Super Secret Phrase")
     alice = Wallet("Alice's Super Secret Phrase")
 
-    matchers = Validators(config.NUMBER_OF_NODES)
     tx1 = Transaction("Stephan just entered room E104", stephan)
-
     # print(tx1.verify_transaction())
 
     # print(tx1.toJSON())
@@ -73,8 +71,8 @@ if __name__ == "__main__":
     tx2 = Transaction(data, alice)
     signature = stephan.sign(data)
     tx2.payload = {}
-    proposer1 = matchers._list[1]
-    proposer2 = matchers._list[2]
+    proposer1 = Wallet("validatooor2")
+    proposer2 = Wallet("validatooor1")
 
     block1 = blockchain.create_block([tx1], proposer1)
 

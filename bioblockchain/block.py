@@ -1,7 +1,5 @@
 from hashlib import sha256
-from os import stat_result
-from bioblockchain.utils import ChainUtils
-from datetime import datetime
+from bioblockchain.utils import ChainUtils, TimeUtils
 from bioblockchain.wallet import Wallet
 import json
 
@@ -10,13 +8,18 @@ import json
 class Block:
 
     def __init__(self, timestamp, previous_hash, current_hash, data, proposer, signature, seq_number):
+        """Header"""
+        # timestamp of block being hashed
         self.timestamp = timestamp
         self._previous_hash = previous_hash
         self._hash = current_hash
-        self.data = data
         self.proposer = proposer
         self.signature = signature
+        # or index
         self.seq_number = seq_number
+        """Payload"""
+        # contain transactions
+        self.data = data
 
     @property
     def hash(self):
@@ -56,12 +59,12 @@ class Block:
             Block object: genesis block
         """
         proposer = Wallet("B!0BL0CKCH41N")
-        previous_hash = ChainUtils.hash("This is the previous hash for genesis block of super duper biometric system's blockchain")
-        now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        previous_hash = ChainUtils.hash("This is the previous hash for genesis block")
+        now = TimeUtils.my_date()
         content = Block.block_content_to_json(now, previous_hash, [])
         hash = ChainUtils.hash(content)
         return Block(now, previous_hash, hash, 
-                     [], proposer.verif_key, proposer.sign(content), 0)
+                     [], proposer.verif_key, proposer.sign_data(content), 0)
     
     
     @staticmethod
@@ -76,14 +79,14 @@ class Block:
         Returns:
             Block object:  new block
         """
-        timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        timestamp = TimeUtils.my_date()
         previous_hash = previous_block._hash
         proposer = proposer_wallet.verif_key
+        seq_number = previous_block.seq_number + 1
 
         content = Block.block_content_to_json(timestamp, previous_hash, data)
         block_hash = ChainUtils.hash(content)
         signature = proposer_wallet.sign(content)
-        seq_number = previous_block.seq_number + 1
         return Block(timestamp, previous_hash, block_hash, 
                      data, proposer, signature, seq_number)
 
@@ -92,6 +95,8 @@ class Block:
     def sign_block_hash(hash, wallet):
         return wallet.sign(hash)
 
+
+    #TODO maybe just remake to a __dict__ function
     @staticmethod
     def block_content_to_json(timestamp, previous_hash, data):
         """constructs json of block's content
@@ -104,9 +109,9 @@ class Block:
         Returns:
             dict : dict containing info about block
         """
-        return { "timestamp" : timestamp, 
-                    "previous_hash": previous_hash.hexdigest(), 
-                    "data": ChainUtils.transactionlist_to_json(data)}
+        return {"timestamp" : timestamp, 
+                "previous_hash": previous_hash.hexdigest(), 
+                "data": ChainUtils.transactionlist_to_json(data)}
 
     @staticmethod
     def block_hash(block):
@@ -125,7 +130,7 @@ class Block:
             Block.block_content_to_json(self.timestamp, self._previous_hash, self.data)
         )
 
-    def verify_proposer(self, proposer_wallet: Wallet):
-        return (self.proposer == proposer_wallet.verif_key)
+    def verify_proposer(self, wallet: Wallet):
+        return (self.proposer == wallet.verif_key)
 
     

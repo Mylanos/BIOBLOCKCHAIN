@@ -17,7 +17,7 @@ run: venv_
 	$(PYTHON) $(FILE_CLIENT) stat $(DEFAULT_UUID)
 
 
-test: venv_
+test_:
 	$(PYTHON) -m unittest discover
 
 

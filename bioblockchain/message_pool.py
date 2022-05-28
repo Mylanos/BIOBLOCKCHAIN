@@ -8,7 +8,6 @@ from bioblockchain.utils import ChainUtils
 PreparePool stores all messages of type prepare received or sent from other nodes.
 """
 
-
 class MessagePool:
 
     def __init__(self) -> None:

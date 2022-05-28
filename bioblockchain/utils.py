@@ -1,11 +1,13 @@
 from hashlib import sha256
 from os import stat
 from uuid import uuid1
-from ecdsa import NIST192p, SigningKey, NIST384p, util
+from ecdsa import NIST256p, SigningKey, NIST384p, util
 from ecdsa.keys import BadSignatureError
 from ecdsa.util import randrange_from_seed__trytryagain, sigdecode_string
 from datetime import datetime
 from pickle import dumps
+
+#TODO redo the verification of tx/wallet/blocks to signing the hashes instead of the data
 
 
 class TimeUtils:
@@ -40,8 +42,8 @@ class ChainUtils:
         Returns:
             SigningKey: private key generated from `seed`
         """
-        secexp = randrange_from_seed__trytryagain(seed, NIST192p.order)
-        sk = SigningKey.from_secret_exponent(secexp, NIST192p)
+        secexp = randrange_from_seed__trytryagain(seed, NIST256p.order)
+        sk = SigningKey.from_secret_exponent(secexp, NIST256p)
         return sk
 
     @staticmethod
