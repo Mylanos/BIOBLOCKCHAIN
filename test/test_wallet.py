@@ -23,8 +23,8 @@ class WalletTestCase(unittest.TestCase):
 
     # tests the signing, hashing and veryfing functionality of Wallet class of a random data
     def test_wallet_signing(self):
-        signature = self.wallet.sign(self.data)
-        signature_bad = self.wallet.sign({"bad": "data"})
+        signature = self.wallet.sign_data(self.data)
+        signature_bad = self.wallet.sign_data({"bad": "data"})
 
         # valid signature
         self.assertTrue(ChainUtils.verify_signature(self.wallet.verif_key, signature,

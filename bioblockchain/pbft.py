@@ -1,111 +1,86 @@
-from hashlib import blake2b, new
 import json, asyncio
-from pickle import FALSE
-from random import randint
-from bioblockchain.blockchain import Blockchain
+from random import random, uniform
 from bioblockchain.transaction import Transaction
 import bioblockchain.config as config
-from bioblockchain.node import Node, Biometric_Processes
-from bioblockchain.message import Message, PBFT_Message, MessageLogged
-# message type enumeration
-
-# TODO FINDOUT what should be stored in the blockchain
-# TODO get_feature_from_storage - ask on the consultation if its ok to get or search not sure
-# TODO make user class instead of Node for users
-
-
-
-class BioBlockchain():
-
-    def __init__(self):
-        self.blockchain = Blockchain()
-        self.process_type = None
-        self.nodes = []
-        self.template_storage = {}
-        self.users = []
-        for num in range(config.NUM_NODES):
-            self.nodes.append(Node(num, self.template_storage, self.users))
-        self.pbft = PBFT(self.nodes)
-        self.node = self.get_random_node()
-
-    async def run_enrollment(self):
-        print("***Received request for enrollment***")
-        print("- processing the data...")
-        data_sensory = self.node.get_sensor_data()
-        data = self.node.feature_extractor(data_sensory, Biometric_Processes.ENROLLMENT)
-        decision = await self.pbft.validate_decision(data, self.node)
-        if decision:
-            print("Features have been validated, storing into database!")
-            self.node.store_features(data)
-        else:
-            raise Exception("System haven't reached consensus on the enroll request!")
-        print(self.template_storage)
-
-    async def run_verification(self):
-        print("*Received request for authorization*")
-        print("Processing the data...")
-        data_sensory = self.node.get_sensor_data()
-        data = self.node.feature_extractor(data_sensory, Biometric_Processes.VERIFICATION)
-        # self.node represents an user making request to biometric system 
-        decision = await self.pbft.validate_decision(data, self.node)
-        if decision:
-            # this should be done differently from the blockchain/or local state of nodes after last transaction(feature extraction)
-            self.node.__matcher(data)
-        else:
-            raise Exception("System haven't reached consensus on the authorization request!")
-
-    # random node to simulate undeterministic choice of biometric terminal/node
-    def get_random_node(self):
-        index = randint(0, 1000) % config.NUM_NODES
-        return self.nodes[index]
+from bioblockchain.message import Message, PBFT_Message
+from colorama import Fore, Style, Back
 
 class PBFT:
-
-    def __init__(self, nodes):
+    """PBFT protocol communication
+    """
+    def __init__(self, nodes, mode):
         self.nodes = nodes
         self.view = 0
+        self.verbose = mode
         # primary node for now hardly set TODO - changing views with primary nodes
         self.primary_node = self.get_leader()
 
     def get_leader(self):
+        """returns current leader
+
+        Returns:
+            Node: Node object with current leader
+        """
         index = self.view % config.NUM_NODES
         return self.nodes[index]
 
     # broadcasts transactions
     async def validate_decision(self, data, user):
-        print(f"\n-------PBFT COMMUNICATION-------")
+        """interface of the pbft protocol where the Transaction is made and Request to validate decision/operation sent """
+        print(Fore.BLUE + "----------------PBFT START----------------" + Style.RESET_ALL)
         #TODO maybe move this to user/node class
         transaction = Transaction(data, user.wallet)
-        print(f"- Creating new request!")
+        print(Fore.CYAN + f"""- Creating new validation request for {data["operation"]}!""" + Style.RESET_ALL)
         await self.broadcast_request(transaction, user)
-        if user.reply_flag:
-            print("- Enough replies have been received, request has been executed and the decision made!")
-            print(f"-------PBFT COMMUNICATION-------\n")
+        if True:
+            print(Fore.BLUE  + "----------------PBFT END----------------" + Style.RESET_ALL)
             return True
-        print(f"\n-------PBFT COMMUNICATION-------\n")
+        print("\n" + Fore.BLUE  + "----------------PBFT COMMUNICATION----------------" + Style.RESET_ALL)
         return False
 
     async def broadcast_request(self, transaction, from_node):
+        """brodcasts new request to all nodes in the network
+        """
         await asyncio.gather(*(self.message_handler(Message(PBFT_Message.REQUEST, from_node, content=transaction), val) for val in self.nodes))
 
     async def broadcast_pre_prepare(self, content=None, from_node=None):
-        # broadcast preprepare
+        """brodcasts pre_prepare to all nodes in the network
+
+        Args:
+            content (Dict, optional): json data neccesary for pre_prepare message(msg_hash/seq_no/view). Defaults to None.
+            from_node (Node, optional): node object sending the pre_prepare message. Defaults to None.
+        """
         if content:
             others = from_node.get_other_nodes(self.nodes)
             await asyncio.gather(*(self.message_handler(Message(PBFT_Message.PRE_PREPARE, from_node, content=content), val) for val in others))   
 
     async def broadcast_prepare(self, content=None, from_node=None):
+        """brodcasts prepare to all nodes in the network
+
+
+        Args:
+            content (Dict, optional): json data neccesary for prepare message(msg_hash/seq_no/view). Defaults to None.
+            from_node (Node, optional): node object sending the prepare message. Defaults to None.
+        """
         if content:
             others = from_node.get_other_nodes(self.nodes)
             await asyncio.gather(*(self.message_handler(Message(PBFT_Message.PREPARE, from_node, content=content), val) for val in others))
 
     async def broadcast_commit(self, content=None, from_node = None):
+        """brodcasts commit to all nodes in the network
+
+
+        Args:
+            content (Dict, optional): json data neccesary for commit message(msg_hash/seq_no/view). Defaults to None.
+            from_node (Node, optional): node object sending the commit message. Defaults to None.
+        """
         if content:
             others = from_node.get_other_nodes(self.nodes)
             await asyncio.gather(*(self.message_handler(Message(PBFT_Message.COMMIT, from_node, content=content), val) for val in others))
 
 
     def broadcast_round_change(self):
+        #TODO unfinished round changing - primary 
         print(f"********************ROUND-CHANGE********************")
         for validator in self.nodes:
            self.message_handler(
@@ -126,13 +101,21 @@ class PBFT:
         return False
 
     async def message_handler(self, message, recipient):
-        # check if the language is correct
+        """message execution manager function
+
+        Args:
+            message (Message): message object being handled by the PBFT protocl
+            recipient (Node): adressee of the message being handled
+        """
+        # simulation mode? -> delays between messages -> await asyncio.sleep(uniform(0,1))
+        # check if the message is correct
         if not message.verify():
             #TODO handle raise error
             exit(1)
 
         if message.ttype == PBFT_Message.REQUEST:
-            print(f'- Replica{recipient.id} received message({json.dumps(message.ttype)})')
+            if self.verbose:
+                print(Fore.CYAN + f'- NODE{recipient.id} (INIT) \t\t received message({json.dumps(message.ttype)})')
             transaction = message.content
             tx_type = transaction.get_type()
             #TODO check for repetitive request(also possibly think about repetitive transactions)
@@ -147,16 +130,18 @@ class PBFT:
             else:
                 raise("Unsuccesful verification of sent transaction!")
         elif message.ttype == PBFT_Message.PRE_PREPARE: 
-            print(f'- Replica{recipient.id} received message({json.dumps(message.ttype)})')
+            if self.verbose:
+                print(f'- NODE{recipient.id} (PRE-PREPARING)\t received message({json.dumps(message.ttype)})')
             msg_hash = message.content["msg_hash"]
             seq = message.content["seq"]
             view = message.content["view"]
             if self.is_verified_node(recipient):
                 log = recipient.search_log_msghash(msg_hash)
-                # not sure if its needed to keep this here, check for existence of request for given pre_prepare
+                # not sure if its needed to keep this check for existence of request for given pre_prepare
                 if log:
                     if recipient.corresponding_view_seq(view, seq):
-                        print(f"- Replica{recipient.id} sending prepare messages")
+                        if self.verbose:
+                            print(f"- NODE{recipient.id} (PRE-PREPARED) \t sending prepare messages")
                         await self.broadcast_prepare(content=message.content, from_node=recipient)
 
                 # TODO node accepts pre prepare if there are not any other hash digests for given seq and view
@@ -164,23 +149,28 @@ class PBFT:
 
 
         elif message.ttype == PBFT_Message.PREPARE:
-            print(f'- Replica{recipient.id}(n.p: {recipient.prepare_count} -> {recipient.prepare_count + 1}) received message({json.dumps(message.ttype)})')
             msg_hash = message.content["msg_hash"]
+            log = await recipient.received_prepare(msg_hash)
+            if self.verbose:
+                print(f'- NODE{recipient.id} (PREPARES:{log.prepare_count - 1}->{log.prepare_count})\t received message({json.dumps(message.ttype)})')
             seq = message.content["seq"]
             view = message.content["view"]
-            log = await recipient.received_prepare(msg_hash)
             if log.prepare_flag and not log.commit_sent:
                 log.commit_sent = True
-                print(f"- Replica{recipient.id}(n.p: {log.prepare_count}) sending commit messages")
+                if self.verbose:
+                    print(f"- NODE{recipient.id} (PREPARES:{log.prepare_count})\t sending commit messages")
                 await self.broadcast_commit(content=message.content, from_node=recipient)
 
         elif message.ttype == PBFT_Message.COMMIT:
-            print(f'- Replica{recipient.id}(n.c: {recipient.commit_count} -> {recipient.commit_count + 1}) received message({json.dumps(message.ttype)})')
             msg_hash = message.content["msg_hash"]
             log = await recipient.received_commit(msg_hash)
+            if self.verbose:
+                print(Fore.CYAN + f'- NODE{recipient.id} (COMMITS:{log.commit_count - 1}->{log.commit_count})\t received message({json.dumps(message.ttype)})')
             if log.commit_flag and not log.reply_sent:
+                # execution of the operation being validated(feature extraction / matching)
                 decision = recipient.verify_decision(log.message.content)
-                print(f"- Replica{recipient.id}(n.c: {recipient.commit_count}) sending reply message with {decision} decision!")
+                if self.verbose:
+                    print(f"- NODE{recipient.id} (COMMITS:{log.commit_count})\t validated transaction, sending \"REPLY\" message!")
                 log.reply_sent = True
                 content = message.content["msg_hash"], decision
                 reply = Message(PBFT_Message.REPLY, recipient, content)
@@ -189,42 +179,38 @@ class PBFT:
         elif message.ttype == PBFT_Message.REPLY:
             msg_hash, decision = message.content
             log = await recipient.received_reply(msg_hash)
-            print(f'- Replica{recipient.id}(decision: {decision}) received message({json.dumps(message.ttype)})')
-
-
-
-
-
-if __name__ == "__main__":
-    bio_blockchain = BioBlockchain()
-    asyncio.run(bio_blockchain.run_enrollment())
-    asyncio.run(bio_blockchain.run_enrollment())
+            if self.verbose:
+                print(f'- NODE{recipient.id} (REPLIES:{log.reply_count - 1}->{log.reply_count})\t received message({json.dumps(message.ttype)})')
+            if log.reply_flag and not log.reply_operation_executed:
+                log.reply_operation_executed = True
+                print(Fore.GREEN + "- Enough replies have been received, request has been executed and succesfully validated!" + Style.RESET_ALL)
+            
     
-    """
-    data = {}
-    data["type"] = "request"
-    data["markants"] = "jofanfafnakejnaskjgbhjfkberghkas"
-    fero = Wallet("lmao")
+"""
+data = {}
+data["type"] = "request"
+data["markants"] = "jofanfafnakejnaskjgbhjfkberghkas"
+fero = Wallet("lmao")
 
-    transaction = Transaction(data, fero)
-    validator = Node(69)
-    msg = Message(PBFT_Message.REQUEST, validator, transaction=transaction)
-    #json_data = json.dumps(msg, default=lambda o: o.__dict__)
-    print(msg.toJSON())
-    print(PBFT_Message.PRE_PREPARE)
-    """
+transaction = Transaction(data, fero)
+validator = Node(69)
+msg = Message(PBFT_Message.REQUEST, validator, transaction=transaction)
+#json_data = json.dumps(msg, default=lambda o: o.__dict__)
+print(msg.toJSON())
+print(PBFT_Message.PRE_PREPARE)
+"""
 
-    """
-    if recipient.transaction_pool.filled():
-        print("Transaction pool THRESHOLD reached: ready to propose new BLOCK!")
-        if self.blockchain.get_proposer() == self.primary_node:
-            print("Validated proposer: proposing new BLOCK!")
-            new_block = self.blockchain.create_block(
-                self.transaction_pool.transactions, self.primary_node)
-            self.block_pool.add_block(new_block)
-            print(f"************************************************TRANSACTION************************************************")
-            self.broadcast_pre_prepare(new_block)
-    """  
+"""
+if recipient.transaction_pool.filled():
+    print("Transaction pool THRESHOLD reached: ready to propose new BLOCK!")
+    if self.blockchain.get_proposer() == self.primary_node:
+        print("Validated proposer: proposing new BLOCK!")
+        new_block = self.blockchain.create_block(
+            self.transaction_pool.transactions, self.primary_node)
+        self.block_pool.add_block(new_block)
+        print(f"************************************************TRANSACTION************************************************")
+        self.broadcast_pre_prepare(new_block)
+"""  
 
 
 """
@@ -232,7 +218,7 @@ Môj thougth process
 
 Takže spravit funkciu ktora bude len simulovať požiadavok na jednu z komponent(nebude sa vytvarať žiadna transakcia pre požiadavok). Tento požiadavok pôjde z nodu ktorý bude reprezentovať
 a sprostredkovávať matcher.
-Po prijatí požiadavku daný node danej komponenty vytvorí novú transakciu tvorenú contentom markantov, id daného nodu(validatora) a výsledok(True/False u Matchera) uklada transaction
+Po prijatí požiadavku daný node danej komponenty vytvorí novú transakciu tvorenú contentom markantov, id daného nodu(validatora) a výsledok(True/False/Score u Matchera) uklada transaction
 do local poolu transakcii
 Broadcast transakcie - preprepare. Po prijatí pre_prepare správy overí transakciu(prijimatel, či ju už nemá v poole a či odosielateľ je korekt validator). Ak rozhodne a nenastane žiadna chyba pri prenose odosiela 
 spravu Prepare všetkym ostatnym nodom v sieti.
@@ -245,28 +231,28 @@ when nodes are prepared they sent commit message, if a node has seen f+1 valid c
 """
 
 """
-    data = {"id": 1234,
-            "room-entered": "E104",
-            "verificated": True,
+data = {"id": 1234,
+        "room-entered": "E104",
+        "verificated": True,
+        "entered-by": "Alice"}
+
+data2 = {"id": 3434,
+            "room-entered": "E105",
+            "verificated": False,
             "entered-by": "Alice"}
 
-    data2 = {"id": 3434,
-             "room-entered": "E105",
-             "verificated": False,
-             "entered-by": "Alice"}
+data3 = {"id": 3714,
+            "room-entered": "D105",
+            "verificated": True,
+            "entered-by": "Stephan"}
 
-    data3 = {"id": 3714,
-             "room-entered": "D105",
-             "verificated": True,
-             "entered-by": "Stephan"}
+data4 = {"id": 9834,
+            "room-entered": "D105",
+            "verificated": False,
+            "entered-by": "Stephan"}
 
-    data4 = {"id": 9834,
-             "room-entered": "D105",
-             "verificated": False,
-             "entered-by": "Stephan"}
-
-    data5 = {"id": 4324,
-             "content": "osjf-fsafsaf-asdfdsf-sff",
-             "req_type": "match",
-             "req-by": "node_xyz"}
+data5 = {"id": 4324,
+            "content": "osjf-fsafsaf-asdfdsf-sff",
+            "req_type": "match",
+            "req-by": "node_xyz"}
 """

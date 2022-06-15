@@ -9,7 +9,6 @@ from pickle import dumps
 
 #TODO redo the verification of tx/wallet/blocks to signing the hashes instead of the data
 
-
 class TimeUtils:
     @staticmethod
     def my_date():

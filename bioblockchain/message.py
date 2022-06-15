@@ -5,6 +5,12 @@ from bioblockchain.utils import ChainUtils
 from ecdsa.keys import BadSignatureError, BadDigestError
 
 class PBFT_Message(str, Enum):
+    """PBFT message types
+
+    Args:
+        str (str): string representation
+        Enum (Enum): Enum inheritance
+    """
     PRE_PREPARE = "PRE_PREPARE"
     REQUEST = "REQUEST"
     PREPARE = "PREPARE"
@@ -13,6 +19,8 @@ class PBFT_Message(str, Enum):
     REPLY = "REPLY"
 
 class Message:
+    """Object passed between nodes in peer-to-peer communication
+    """
     def __init__(self, ttype=None, sender=None, content=None):
         self.ttype = ttype
         self.sender = sender            
@@ -22,6 +30,11 @@ class Message:
         self.signature = sender.wallet.sign_digest(self.hash)
 
     def toJSON(self):
+        """custom object to json conversion
+
+        Returns:
+            dict: json/dict object 
+        """
         dictionary = {}
         if self.ttype == PBFT_Message.REQUEST:
             dictionary = {"ttype": json.dumps(self.ttype)}
@@ -34,6 +47,11 @@ class Message:
         return dictionary
 
     def verify(self):
+        """verifies message
+
+        Returns:
+            bool: True if valid, else False
+        """
         hash = ChainUtils.hash(self.toJSON()).digest()
         try:
             public_key = self.sender.wallet.verif_key
@@ -45,6 +63,8 @@ class Message:
             return False
 
 class MessageLogged:
+    """Single log stored in a node for given message
+    """
     def __init__(self, message):
         self.msg_hash = ChainUtils.hash(message.toJSON()).digest()
         self.message = message
@@ -54,6 +74,7 @@ class MessageLogged:
         self.prepare_flag = False
         self.commit_flag = False
         self.reply_flag = False
+        self.reply_operation_executed = False
         self.commit_sent = False
         self.reply_sent = False
         self.view_num = None

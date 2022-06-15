@@ -1,21 +1,27 @@
 from re import S
 from bioblockchain.block import Block
 from bioblockchain.transaction import Transaction
-from ecdsa import NIST384p, keys
-import bioblockchain.config as config
 from bioblockchain.wallet import Wallet
-from random import randint
-from secrets import compare_digest
 
 #TODO argparse
-#TODO implement search for the transactions for given wallet blockchain
+#TODO implement search for the transactions for given wallet blockchain(MAYBE UNNECESARY)
 
 class Blockchain:
+    """blockchain class containing list(chain) of blocks
+    """
     def __init__(self):
         self.chain = [Block.genesis()]
 
-    # wrapper function
     def create_block(self, transactions, wallet):
+        """wrapper function for Block instantiation
+
+        Args:
+            transactions (list of Transaction objects): list of transactions that will be stored in newly created block
+            wallet (Wallet object): proposer of the block
+
+        Returns:
+            Block: instance of Block object
+        """
         block = Block.create_block(
             self.chain[len(self.chain) - 1],
             transactions,
@@ -24,10 +30,26 @@ class Blockchain:
         return block
 
     def add_block(self, block: Block):
+        """append block to blockchain
+
+        Args:
+            block (Block): block to be appended
+
+        Returns:
+            Block: appended block
+        """
         self.chain.append(block)
         return block
 
     def is_valid_block(self, block: Block):
+        """check for validity of block
+
+        Args:
+            block (Block): Block object to be validated
+
+        Returns:
+            Bool: True if valid, else False
+        """
         last_block = self.chain[-1]
         if((last_block.seq_number + 1) == block.seq_number and
                 last_block.hash_hexdigest == block.previous_hash_hexdigest):
@@ -35,20 +57,13 @@ class Blockchain:
             if(block.hash_hexdigest == Block.block_hash(block).hexdigest() and block.verify_block()):
                 return True
         return False
-
-    #updates the block by appending the prepare and commit messages to the block
-    def update_block(self, hash, block_pool, prepare_pool, commit_pool):
-        block = block_pool.getBlock(hash)
-        block.prepareMessages = prepare_pool.list[hash]
-        block.commitMessages = commit_pool.list[hash]
-        self.addBlock(block)
   
 
     def display_chain(self):
+        """prints out the blockchain content
+        """
         for i in range(len(self.chain)):
             print(self.chain[i])
-        
-    
 
     @property
     def last_block(self):
@@ -61,9 +76,6 @@ if __name__ == "__main__":
     alice = Wallet("Alice's Super Secret Phrase")
 
     tx1 = Transaction("Stephan just entered room E104", stephan)
-    # print(tx1.verify_transaction())
-
-    # print(tx1.toJSON())
 
     data = {"id": 1234, "room-entered": "E104",
             "verificated": True, "approved-by": "Stephan"}
@@ -83,12 +95,3 @@ if __name__ == "__main__":
     print(block2.verify_proposer(proposer2))
     print(blockchain.is_valid_block(block2))
 
-    """
-    seed = urandom(NIST384p.baselen) # or other starting point
-    keypair1 = utils.generate_key_from_seed(seed)
-    keypair2 = utils.generate_key_from_seed(seed)
-    message = b"message"
-    signature = keypair1.sign(message)
-    assert keypair1.to_string() == keypair2.to_string()
-    utils.verify_signature(keypair1.verifying_key, signature, message)
-    """

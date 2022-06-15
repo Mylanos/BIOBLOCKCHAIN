@@ -5,14 +5,12 @@ from json import dumps
 
 
 # TODO daj bacha na tie prevody stringov a adries(wallet)
-# TODO Uprav túto triedu pre účely bakalarskej prace
-# TODO skontroluj co je treba podpisovat ci ten content alebo uz len hash z contentu
-"""
+# TODO pridaj timestamp
 
-"""
 
 class Transaction:
-
+    """transaction holding certain data with all accompanying info
+    """
     def __init__(self, data, wallet):
         self.id = ChainUtils.id()
         self.sender = wallet.verif_key
@@ -31,7 +29,7 @@ class Transaction:
 
     # verifies wether the transaction is valid
     def verify_transaction(self):
-        """test
+        """verification of transaction
 
         Args:
             transaction ([type]): [description]
@@ -45,23 +43,19 @@ class Transaction:
     def hash_hexdigest(self):
         return self.hash.hexdigest()
 
-    # transforms class variables into json 
     def toJSON(self):
+        """transforms class variables into json/dict
+
+        Returns:
+            dict: dictionary from this transaction
+        """
         content = {"id": self.id, "sender": ChainUtils.string_from_verifkey(self.sender), "payload": self.payload,
                    "hash": self.hash.hexdigest(), "signature": self.signature.hex()}
-        # print("------- JSON ------")
-        # print(self.id)
-        # print(ChainUtils.string_from_verifkey(self.sender))
-        # print(self.payload)
-        # print(self.hash)
-        # print(self.signature.hex())
-        # print("------- JSON ------")
         return content
 
     def get_type(self):
         return self.payload["data"]["process_type"]
-
-    # prints formatted class 
+ 
     def __str__(self) -> str:
         return (f"""
         Transaction

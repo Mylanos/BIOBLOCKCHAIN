@@ -6,6 +6,8 @@ import json
 #TODO watchout for the proposer print, might be a unnecessary check for strings
 
 class Block:
+    """ block class in the blockchain
+    """
 
     def __init__(self, timestamp, previous_hash, current_hash, data, proposer, signature, seq_number):
         """Header"""
@@ -50,7 +52,6 @@ class Block:
         - - - - - - - - - - - - - - - - - - - - - - - - - - -- - - - - - - - - - - - -
         """
 
-    
     @staticmethod
     def genesis():
         """creates genesis block of bioblockchain
@@ -86,14 +87,14 @@ class Block:
 
         content = Block.block_content_to_json(timestamp, previous_hash, data)
         block_hash = ChainUtils.hash(content)
-        signature = proposer_wallet.sign(content)
+        signature = proposer_wallet.sign_data(content)
         return Block(timestamp, previous_hash, block_hash, 
                      data, proposer, signature, seq_number)
 
     # signs the block using the wallet instance
     @staticmethod
     def sign_block_hash(hash, wallet):
-        return wallet.sign(hash)
+        return wallet.sign_hash(hash)
 
 
     #TODO maybe just remake to a __dict__ function
@@ -115,6 +116,14 @@ class Block:
 
     @staticmethod
     def block_hash(block):
+        """calculate hash of Block object
+
+        Args:
+            block (Block): block object to calculate hash on
+
+        Returns:
+            SHA256: hash of the object
+        """
         content = Block.block_content_to_json(block.timestamp, block.previous_hash, block.data)
         return ChainUtils.hash(content)
 
