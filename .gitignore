@@ -136,3 +136,6 @@ view.py
 
 # macos 
 *.DS_Store
+
+# vscode
+.vscode/
