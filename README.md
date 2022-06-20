@@ -5,3 +5,8 @@
   - make run -> run simulator script
   - make run_verbose -> run verbose simulator script
   - make tests -> run tests
+
+# DOCUMENTATION
+ - enter /docs folder
+ - make html
+ - open _build/html/index.html
