@@ -25,21 +25,47 @@ class Block:
 
     @property
     def hash(self):
+        """
+        hash is a property representing hash value of given block
+
+        Returns:
+            _Hash: hash object from hashlib library
+        """
         return self._hash
 
     @property
     def hash_hexdigest(self):
+        """
+        hash_hexdigest is a property representing string hash value of given block
+
+        Returns:
+            str: string hash value 
+        """
         return self._hash.hexdigest()
     
     @property
     def previous_hash_hexdigest(self):
+        """
+        previous_hash_hexdigest is a property representing string hash value of previous block
+
+        Returns:
+            _type_: _description_
+        """
         return self._previous_hash.hexdigest()
 
     @property
     def previous_hash(self):
+        """
+        previous_hash is a property representing hash value of previous block
+
+        Returns:
+            _Hash: hash object from hashlib library
+        """
         return self._previous_hash
     
     def __str__(self):
+        """ magic method for string representation of Block instance
+        """
         return f"""
         - - - - - - - - - - - - - - - - - Block - - - - - - - - - - - - - - - - - - - 
         Timestamp   : {self.timestamp}
@@ -54,7 +80,7 @@ class Block:
 
     @staticmethod
     def genesis():
-        """creates genesis block of bioblockchain
+        """genesis creates genesis block of bioblockchain
 
         Returns:
             Block object: genesis block
@@ -70,15 +96,15 @@ class Block:
     
     @staticmethod
     def create_block(previous_block, data, proposer_wallet):
-        """creates another block to blockchain
+        """create_block is a static method that instantiates Block class
 
         Args:
-            previous_block (Block object): previous block to be connected with the newly appended block
-            data ([Transaction objects list]): listof new transactions
+            previous_block (Block object): previous block needed for needed attachment in the new block
+            data ([Transaction object list]): list of new transactions
             proposer_wallet (Wallet object): voted proposer to append new block to blockchain
 
         Returns:
-            Block object:  new block
+            Block object:  new Block instance
         """
         timestamp = TimeUtils.my_date()
         previous_hash = previous_block._hash
@@ -92,15 +118,26 @@ class Block:
                      data, proposer, signature, seq_number)
 
     # signs the block using the wallet instance
+    #TODO unused 
     @staticmethod
     def sign_block_hash(hash, wallet):
+        """
+        sign_block_hash signs passed hash value with given wallet
+
+        Args:
+            hash (Hash_ object): passed hash value
+            wallet (Wallet object): wallet object signing the hash value 
+
+        Returns:
+            signature: signature
+        """
         return wallet.sign_hash(hash)
 
 
     #TODO maybe just remake to a __dict__ function
     @staticmethod
     def block_content_to_json(timestamp, previous_hash, data):
-        """constructs json of block's content
+        """block_content_to_json constructs json/dict from block's content
 
         Args:
             timestamp (String): date
@@ -108,7 +145,7 @@ class Block:
             data ([Transaction objects list]): transactions
 
         Returns:
-            dict : dict containing info about block
+            dict : dict/json containing info about block
         """
         return {"timestamp" : timestamp, 
                 "previous_hash": previous_hash.hexdigest(), 
@@ -116,13 +153,13 @@ class Block:
 
     @staticmethod
     def block_hash(block):
-        """calculate hash of Block object
+        """block_hash calculate hash of Block object
 
         Args:
             block (Block): block object to calculate hash on
 
         Returns:
-            SHA256: hash of the object
+            Hash_ object: hash of the object
         """
         content = Block.block_content_to_json(block.timestamp, block.previous_hash, block.data)
         return ChainUtils.hash(content)
@@ -131,7 +168,7 @@ class Block:
         """verifies block
 
         Returns:
-            True if valid block, else False
+            bool: True if valid block, else False
         """
         return ChainUtils.verify_signature(
             self.proposer,
@@ -140,6 +177,15 @@ class Block:
         )
 
     def verify_proposer(self, wallet: Wallet):
+        """
+        verify_proposer verifies if the block has been proposed by a given wallet
+
+        Args:
+            wallet (Wallet): wallet being verified
+
+        Returns:
+            bool: True if valid proposer, else False
+        """
         return (self.proposer == wallet.verif_key)
 
     

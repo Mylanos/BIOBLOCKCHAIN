@@ -8,10 +8,10 @@ from colorama import Fore, Style, Back
 class PBFT:
     """PBFT protocol communication
     """
-    def __init__(self, nodes, mode):
+    def __init__(self, nodes, verbosity):
         self.nodes = nodes
         self.view = 0
-        self.verbose = mode
+        self.verbose = verbosity
         # primary node for now hardly set TODO - changing views with primary nodes
         self.primary_node = self.get_leader()
 

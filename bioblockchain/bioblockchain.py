@@ -10,7 +10,7 @@ class BioBlockchain():
     BioBlockchain is a main class containing scenarios showcasing integration of blockchain and biometric system processes
     """
 
-    def __init__(self, mode):
+    def __init__(self, verbosity):
         self.blockchain = Blockchain()
         self.process_type = None
         # list of nodes in the bioblockchain network
@@ -21,12 +21,12 @@ class BioBlockchain():
         self.users = []
         for num in range(config.NUM_NODES):
             self.nodes.append(Node(num, self.template_storage, self.users))
-        self.pbft = PBFT(self.nodes, mode)
+        self.pbft = PBFT(self.nodes, verbosity)
         self.node = self.get_random_node()
 
     async def run_enrollment(self):
         """
-        run_enrollment implements enrollment scenario of a new user to the system
+        run_enrollment showcases enrollment scenario of a new user to the biometric system
         """
         print("\n" + Fore.YELLOW + "***\tStart of enrollment\t\t***" + Style.RESET_ALL)
         print("- Sensor scanning raw biometrics...")
@@ -47,7 +47,7 @@ class BioBlockchain():
         print(Fore.YELLOW + "***\tEnd of enrollment\t\t***" + Style.RESET_ALL)
 
     async def run_authentication(self, process, claimed_identity = None):
-        """identification or verification scenario depending passed argument
+        """run_authentication showcases identification or verification scenario in the biometric system
 
         Args:
             process (str): type of authentication/recognition process
@@ -76,7 +76,13 @@ class BioBlockchain():
             print(Fore.RED + "System haven't reached consensus on the authorization request!"+ Style.RESET_ALL)
         print(Fore.YELLOW + f"***\tEnd of {process}\t\t\t***" + Style.RESET_ALL)
 
-    # random node to simulate undeterministic choice of biometric terminal/node
+    #TODO change the selection of the nodes to be evenly spread out in the distributed system
     def get_random_node(self):
+        """
+        get_random_node random node to simulate undeterministic choice of biometric terminal/node
+
+        Returns:
+            Node: node selected from the network
+        """
         index = randint(0, 1000) % config.NUM_NODES
         return self.nodes[index]

@@ -3,9 +3,11 @@ from bioblockchain.bioblockchain import BioBlockchain
 import asyncio
 from bioblockchain.parser import MyParser
 
-"""main script running bioblockchain scenarios"""
 
-if __name__ == "__main__":
+def run():
+    """
+    run is a main script running the bioblockchain demonstrator
+    """
     parser = MyParser()
     bio_blockchain = BioBlockchain(parser.verbose)
     asyncio.run(bio_blockchain.run_enrollment())
@@ -13,3 +15,6 @@ if __name__ == "__main__":
     claimed_identity = next(iter(bio_blockchain.template_storage))
     asyncio.run(bio_blockchain.run_authentication("identification", claimed_identity=claimed_identity))
     asyncio.run(bio_blockchain.run_authentication("verification"))
+
+if __name__ == "__main__":
+    run()

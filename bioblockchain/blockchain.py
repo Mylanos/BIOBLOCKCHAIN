@@ -13,14 +13,14 @@ class Blockchain:
         self.chain = [Block.genesis()]
 
     def create_block(self, transactions, wallet):
-        """wrapper function for Block instantiation
+        """create_block wrapper function for Block instantiation
 
         Args:
-            transactions (list of Transaction objects): list of transactions that will be stored in newly created block
+            transactions ([Transaction object]): list of transactions that will be stored in newly created block
             wallet (Wallet object): proposer of the block
 
         Returns:
-            Block: instance of Block object
+            Block object: instance of Block object
         """
         block = Block.create_block(
             self.chain[len(self.chain) - 1],
@@ -30,13 +30,13 @@ class Blockchain:
         return block
 
     def add_block(self, block: Block):
-        """append block to blockchain
+        """add_block appends block to the blockchain
 
         Args:
-            block (Block): block to be appended
+            block (Block object): block to be appended
 
         Returns:
-            Block: appended block
+            Block object: appended block
         """
         self.chain.append(block)
         return block
@@ -45,10 +45,10 @@ class Blockchain:
         """check for validity of block
 
         Args:
-            block (Block): Block object to be validated
+            block (Block object): Block object to be validated
 
         Returns:
-            Bool: True if valid, else False
+            bool: True if valid, else False
         """
         last_block = self.chain[-1]
         if((last_block.seq_number + 1) == block.seq_number and
@@ -67,6 +67,12 @@ class Blockchain:
 
     @property
     def last_block(self):
+        """
+        last_block property containing last block in the blockchain
+
+        Returns:
+            Block objectr: latest block object appended to the blockchain
+        """
         return self.chain[-1]
 
 
