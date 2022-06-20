@@ -70,28 +70,31 @@ class Node:
         return data
 
     def features_in_database(self, features):
-        """1:M search for a given feature in the database
+        """
+        features_in_database method searches for a given feature in the whole database of templates(1:M search)
 
         Args:
-            features (str): string representation of feature
+            features (str):  string representation of feature
 
         Returns:
-            String: string representation of found key or None
+            str: found key/identifier for given features/user or None
         """
+        
         for key, feature in self.template_storage.items():
             if features == feature:
                 return key
         return None
     
     def claimed_identity_in_database(self, features, claimed_identity):
-        """1:1 search for a given feature and claimed identity in the database 
+        """
+        claimed_identity_in_database method validates if given feature is stored in the template database in form of claimed identity(1:1 search)
 
         Args:
-            features (str): string representation of feature
-            claimed_identity(str): string representation of the claimed identity
+            features (str): string representation of acquired features
+            claimed_identity (str): string representation of the claimed identity
 
         Returns:
-            String: string representation of found key or None
+            str: string representation of found user's key/identifier or None
         """
         search_result = self.search_user_in_database(claimed_identity)
         if search_result:
@@ -247,8 +250,6 @@ class Node:
 
     def compare_features(self, features1, features2):
         """naive comparison of features(hard return True)
-        #TODO features are generated randomly, cant compare them expressively
-        #TODO certain biometric systems are returning a score of similarity
         
         Args:
             features1 (str): first features 
@@ -257,6 +258,8 @@ class Node:
         Returns:
             Bool: True if they are similar
         """
+        #TODO features are generated randomly, cant compare them expressively
+        #TODO certain biometric systems are returning a score of similarity
         return True
 
     def verify_decision(self, transaction):

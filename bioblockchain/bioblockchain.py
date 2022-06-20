@@ -6,7 +6,8 @@ from colorama import Fore, Style, Back
 from bioblockchain.pbft import PBFT
 
 class BioBlockchain():
-    """main class integrating functionality of blockchain and biometric system
+    """
+    BioBlockchain is a main class containing scenarios showcasing integration of blockchain and biometric system processes
     """
 
     def __init__(self, mode):
@@ -24,15 +25,19 @@ class BioBlockchain():
         self.node = self.get_random_node()
 
     async def run_enrollment(self):
-        """scenario of enrollment
+        """
+        run_enrollment implements enrollment scenario of a new user to the system
         """
         print("\n" + Fore.YELLOW + "***\tStart of enrollment\t\t***" + Style.RESET_ALL)
         print("- Sensor scanning raw biometrics...")
+        # sensor collects and stores received data
         data_sensory = self.node.get_sensor_data()
         print("- Feature extractor processing raw data...")
+        # feature extraction of collected data on approached terminal
         feature_extractor_data = self.node.feature_extractor(data_sensory, Biometric_Processes.ENROLLMENT)
         feature_extractor_data["operation"] = "Feature Extraction"
         print("- Extracted features requesting to be validated...")
+        # extracted features on approached terminal
         decision = await self.pbft.validate_decision(feature_extractor_data, self.node)
         if decision:
             print(Back.GREEN + Fore.WHITE + "- Features have been consensually validated, storing into database!"+ Style.RESET_ALL)
