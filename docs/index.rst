@@ -5,6 +5,12 @@
 
 Welcome to Bioblockchain's documentation!
 =========================================
+This is a documentation webpage for the Bioblockchain demonstrator that showcases the integration of blockchain in biometric systems 
+with the goal of making the system more secure. The demonstrator is a terminal application implemented in Python language, visualizing the communication
+in the distributed network of nodes. These nodes are participating in a byzantine consensus that validates executed processes in a single node among more 
+nodes thus resulting in the decentralization of the classical biometric system. Each operation outcome is stored in a blockchain data structure that extends the system's security. 
+Blockchain characteristic immutability, transparency, and verifiability allow the nodes to verify previous transactions/operations, thus the proposed system can mitigate 
+potential security weak points(such as overriding of the components, replay of old/artifical data, etc..).
 
 .. toctree::
    :maxdepth: 2

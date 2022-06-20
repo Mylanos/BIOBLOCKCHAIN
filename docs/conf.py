@@ -20,7 +20,7 @@ import bioblockchain
 project = 'Bioblockchain'
 copyright = '2022, Marek Ziska'
 author = 'Marek Ziska'
-
+version = release = "2022.1.0"
 
 # -- General configuration ---------------------------------------------------
 
