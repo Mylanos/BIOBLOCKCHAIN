@@ -13,8 +13,9 @@ def run():
     asyncio.run(bio_blockchain.run_enrollment())
     # call retrieves first user in the database in form of his key()
     claimed_identity = next(iter(bio_blockchain.template_storage))
-    asyncio.run(bio_blockchain.run_authentication("identification", claimed_identity=claimed_identity))
-    asyncio.run(bio_blockchain.run_authentication("verification"))
+    asyncio.run(bio_blockchain.run_authentication("verification", claimed_identity=claimed_identity))
+    asyncio.run(bio_blockchain.run_authentication("identification"))
+    bio_blockchain.blockchain.display_chain()
 
 if __name__ == "__main__":
     run()

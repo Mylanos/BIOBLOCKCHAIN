@@ -1,4 +1,5 @@
 from hashlib import sha256
+import json
 from os import stat
 from uuid import uuid1
 from ecdsa import NIST256p, SigningKey, NIST384p, util
@@ -10,16 +11,45 @@ from pickle import dumps
 #TODO redo the verification of tx/wallet/blocks to signing the hashes instead of the data
 
 class TimeUtils:
+    """
+     TimeUtils contains static methods for time operations
+    """
     @staticmethod
     def my_date():
+        """
+        my_date returns current date in given format
+
+        Returns:
+            _type_: _description_
+        """
         return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
 
 class ChainUtils:
+    """
+    ChainUtils contains static methods for cryptographic operations and operations with blockchain
+
+    Raises:
+        ValueError: Raised when passed arguments to verify_signature are of wrong type 
+        BadSignatureError: Raised in verify_signature when the signature is wrong
+    """
     
     @staticmethod
     def transactionlist_to_json(tx_list):
-        json_list = [tx.toJSON() for tx in tx_list]
+        """
+        transactionlist_to_json converts Transaction objects to list of dictionaries(json)
+
+        Args:
+            tx_list (List or Transaction): list of transactions or single Transaction
+
+        Returns:
+            List: list of dictionaries
+        """
+        json_list = []
+        if isinstance(tx_list, list):
+            json_list = [tx.toJSON() for tx in tx_list]
+        else:
+            json_list = [tx_list.toJSON()]
         return json_list
 
     @staticmethod
@@ -82,9 +112,7 @@ class ChainUtils:
             public_key.verify(signature, data_bytes, hashfunc=sha256)
             return True
         except BadSignatureError as e:
-            print(e)
-            #TODO MISSING RAISE HANDLING?????
-            return False
+            raise BadSignatureError('Signature is not valid!')
 
     @staticmethod
     def string_from_verifkey(verifying_key):

@@ -1,6 +1,7 @@
 from hashlib import sha256
 from bioblockchain.utils import ChainUtils, TimeUtils
 from bioblockchain.wallet import Wallet
+from bioblockchain.transaction import Transaction
 import json
 
 #TODO watchout for the proposer print, might be a unnecessary check for strings
@@ -13,23 +14,26 @@ class Block:
         """Header"""
         # timestamp of block being hashed
         self.timestamp = timestamp
+        # previous hash 
         self._previous_hash = previous_hash
         self._hash = current_hash
+        # wallet of the proposer
         self.proposer = proposer
+        # signature
         self.signature = signature
-        # or index
+        # index
         self.seq_number = seq_number
+
         """Payload"""
-        # contain transactions
+        # transactions
         self.data = data
 
     @property
     def hash(self):
-        """
-        hash is a property representing hash value of given block
+        """ hash is a property representing hash value of given block
 
         Returns:
-            _Hash: hash object from hashlib library
+            Hash: hash object from hashlib library
         """
         return self._hash
 
@@ -66,12 +70,13 @@ class Block:
     def __str__(self):
         """ magic method for string representation of Block instance
         """
+
         return f"""
         - - - - - - - - - - - - - - - - - Block - - - - - - - - - - - - - - - - - - - 
         Timestamp   : {self.timestamp}
         Last Hash   : {self._previous_hash.hexdigest()}
         Hash        : {self._hash.hexdigest()}
-        Data        : {self.data}
+        Data        : \t{self.data}
         Proposer    : {ChainUtils.string_from_verifkey(self.proposer) if type(self.proposer ) != str else self.proposer}
         Signature   : {self.signature.hex()}
         Sequence No : {self.seq_number}
@@ -88,10 +93,11 @@ class Block:
         proposer = Wallet("B!0BL0CKCH41N")
         previous_hash = ChainUtils.hash("This is the previous hash for genesis block")
         now = TimeUtils.my_date()
-        content = Block.block_content_to_json(now, previous_hash, [])
+        genesis_tx = Transaction("GENESIS BLOCK", proposer)
+        content = Block.block_content_to_json(now, previous_hash, genesis_tx)
         hash = ChainUtils.hash(content)
         return Block(now, previous_hash, hash, 
-                     [], proposer.verif_key, proposer.sign_data(content), 0)
+                     genesis_tx, proposer.verif_key, proposer.sign_data(content), 0)
     
     
     @staticmethod

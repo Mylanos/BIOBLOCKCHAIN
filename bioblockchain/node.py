@@ -22,28 +22,29 @@ class Biometric_Processes(str, Enum):
 class Node:
     """single node participating in the peer-2-peer network
     """
-    def __init__(self, node_num, storage, users):
+    def __init__(self, node_num, storage, users, blockchain):
+        # reference to storage
         self.template_storage = storage
+        # nodes ID
         self.id = node_num
+        # wallet keypair for given Node
         self.wallet = Wallet(f"NODE {node_num}")
+        # reference to blockchain
+        self.blockchain = blockchain
+        # request log containing received request messages
         self.request_log = []
+        # list containing processed transactions
         self.transaction_pool = []
+        # list of enrolled users wallets
         self.users = users
+        # sequence number of received requests
         self.request_sequence_num = 0
         #TODO figure out how the views are represented
         self.current_view = 0
-        self.prepare_count = 0
-        self.commit_count = 0
-        self.reply_count = 0
-        self.prepare_flag = False
-        self.commit_flag = False
-        self.reply_flag = False
-        self.commit_sent = False
-        self.reply_sent = False
         
     def matcher(self, features, mode, claimed_identity):
         data = {}
-        if mode == Biometric_Processes.VERIFICATION:
+        if mode == Biometric_Processes.IDENTIFICATION:
             # search is made by 1:M comparison, in real world scenario templates/biometrics wouldnt be perfectly same
             result = self.features_in_database(features)
             if result:      
@@ -54,8 +55,8 @@ class Node:
             else:
                 #TODO do not raise an exception here, conclude and handle as a failed match
                 raise Exception("Failed to find similar biometrics in the system: Identification failed!")
-        if mode == Biometric_Processes.IDENTIFICATION:
-            # search is made by 1:M comparison, in real world scenario templates/biometrics wouldnt be perfectly same
+        if mode == Biometric_Processes.VERIFICATION:
+            # search is made by 1:1 comparison, in real world scenario templates/biometrics wouldnt be perfectly same
             result = self.claimed_identity_in_database(features, claimed_identity)
             if result:      
                 data["user"] = result
@@ -286,19 +287,39 @@ class Node:
             #check if the user
             searched_features = self.search_user_in_database(data["user"])
             if searched_features:
-                if Biometric_Processes(data["process_type"]) == Biometric_Processes.IDENTIFICATION.value:
+                if Biometric_Processes(data["process_type"]) == Biometric_Processes.VERIFICATION.value:
                     result = self.claimed_identity_in_database(searched_features, data["claimed_identity"])
                     if result:
                         return True
                     else:
                         return False
-                if Biometric_Processes(data["process_type"]) == Biometric_Processes.VERIFICATION.value:
+                if Biometric_Processes(data["process_type"]) == Biometric_Processes.IDENTIFICATION.value:
                     result = self.features_in_database(searched_features)
                     if result:
                         return True
                     else:
                         return False
 
+    def verify_block(self, block):
+        """
+        verify_block node verifies validity of proposen block
+
+        Args:
+            block (Block): proposed block
+
+        Returns:
+            Bool: is the block valid or not
+        """
+        return block.verify_block()
+
+    def add_block_to_blockchain(self, block):
+        """
+        add_block_to_blockchain given node adds block to blockchain
+
+        Args:
+            block (Block): block to be added to blockchain
+        """
+        self.blockchain.add_block(block)
             
 
     # TODO watchout for unsuccesful search, might cause errors 
@@ -366,3 +387,16 @@ class Node:
             return others
         else:
             return nodes
+
+    def create_block(self, transaction): 
+        """
+        create_block creation of a new block with given transaction proposed by this node
+
+        Args:
+            transaction (Transaction object): transaction to be added to the block
+
+        Returns:
+            Block: created block object
+        """
+        block = self.blockchain.create_block(transaction, self.wallet)
+        return block

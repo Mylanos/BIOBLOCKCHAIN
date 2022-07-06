@@ -9,27 +9,25 @@ from json import dumps
 
 
 class Transaction:
-    """transaction holding certain data with all accompanying info
+    """
+     Transaction class is holding certain data with accompanying info needed for it's verification
     """
     def __init__(self, data, wallet):
+        # id of the transaction for search 
         self.id = ChainUtils.id()
+        # id of the operation
+        self.operation_id = ChainUtils.id()
+        # public key of the Transaction's sender 
         self.sender = wallet.verif_key
+        # data
         self.payload = {"data": data, "timestamp": TimeUtils.my_date()}
+        # hash of the data
         self.hash = ChainUtils.hash(dumps(self.payload))
+        # signature of the data
         self.signature = wallet.sign_data(self.payload)
-        
-        """
-        self.hash_hex = transaction.hash_hexdigest
-        self.block_hash = transaction.hash
-        self.public_key = wallet._verif_key
-        self.content = {"block_hash": self.hash_hex, 
-                        "public_key": wallet._verif_key}
-        self.signature = wallet.sign(self.content)
-        """
 
-    # verifies wether the transaction is valid
-    def verify_transaction(self):
-        """verification of transaction
+    def verify_transaction(self): 
+        """verify_transaction verifies wether the transaction is valid
 
         Args:
             transaction ([type]): [description]
@@ -41,6 +39,12 @@ class Transaction:
 
     @property
     def hash_hexdigest(self):
+        """
+        hash_hexdigest is a property value of Transaction's hash in it's string representation
+
+        Returns:
+            Str: Hash representation of string
+        """
         return self.hash.hexdigest()
 
     def toJSON(self):
@@ -52,18 +56,21 @@ class Transaction:
         content = {"id": self.id, "sender": ChainUtils.string_from_verifkey(self.sender), "payload": self.payload,
                    "hash": self.hash.hexdigest(), "signature": self.signature.hex()}
         return content
-
-    def get_type(self):
-        return self.payload["data"]["process_type"]
  
     def __str__(self) -> str:
         return (f"""
-        Transaction
-        From: {ChainUtils.string_from_verifkey(self.sender)}
-        Payload: {self.payload}
-        Hash: {self.hash}
-        Signature: {self.signature.hex()}
+            Transaction
+            From: {ChainUtils.string_from_verifkey(self.sender)}
+            Payload: {self.payload}
+            Hash: {self.hash}
+            Signature: {self.signature.hex()}
         """)
 
     def get_data(self):
+        """
+        get_data returns data contained in Transaction
+
+        Returns:
+            Dict: dictionary with data
+        """
         return self.payload["data"]

@@ -1,6 +1,7 @@
 from enum import Enum
 import json
 from bioblockchain.transaction import Transaction
+from bioblockchain.block import Block
 from bioblockchain.utils import ChainUtils
 from ecdsa.keys import BadSignatureError, BadDigestError
 
@@ -40,6 +41,8 @@ class Message:
             dictionary = {"ttype": json.dumps(self.ttype)}
             if isinstance(self.content, Transaction):
                 dictionary["content"] = self.content.toJSON()
+            elif isinstance(self.content, Block):
+                dictionary["content"] = Block.block_content_to_json(self.content.timestamp, self.content.previous_hash, self.content.data)
             else: 
                 dictionary["content"] = self.content               
             dictionary["sender"] = ChainUtils.string_from_verifkey(self.sender.wallet.verif_key)
@@ -81,6 +84,13 @@ class MessageLogged:
         self.seq_num = None
 
     def update_nums(self, view_num, seq_num):
+        """
+        update_nums updates view and sequence number of PBFT protocol
+
+        Args:
+            view_num (Int): current view number
+            seq_num (Int): current sequence number
+        """
         self.view_num = view_num
         self.seq_num = seq_num
     
