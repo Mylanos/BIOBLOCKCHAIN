@@ -232,8 +232,10 @@ class Node:
         # provisional feature extraction
         features = self.extract(data_sensory)
         data = {}
-        if self.features_in_database(features) and process_type == Biometric_Processes.ENROLLMENT:
-            raise Exception("Features were already enrolled: Operation forbidden!")
+        if process_type == Biometric_Processes.ENROLLMENT:
+            if self.features_in_database(features):
+                raise Exception("Features were already enrolled: Operation forbidden!")
+            
         data["sensor_data"] = data_sensory
         data["features"] = features
         data["extraction_timestamp"] = "12.07.1999"
@@ -310,6 +312,7 @@ class Node:
         Returns:
             Bool: is the block valid or not
         """
+        print(Fore.CYAN + f'- NODE{self.id}\t\t\t is validating the proposed block!')
         return block.verify_block()
 
     def add_block_to_blockchain(self, block):

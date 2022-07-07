@@ -4,6 +4,7 @@ import bioblockchain.config as config
 from bioblockchain.node import Node, Biometric_Processes
 from colorama import Fore, Style, Back
 from bioblockchain.pbft import PBFT
+from bioblockchain.utils import ChainUtils
 
 class BioBlockchain():
     """
@@ -28,6 +29,8 @@ class BioBlockchain():
         """
         run_enrollment showcases enrollment scenario of a new user to the biometric system
         """
+        # unique ID identifying this process of enrollment for later tracing of transactions within this operation
+        new_process_id = ChainUtils.id()
         print("\n" + Fore.YELLOW + "***\tStart of enrollment\t\t***" + Style.RESET_ALL)
         print("- Sensor scanning raw biometrics...")
         # sensor collects and stores received data
@@ -36,6 +39,7 @@ class BioBlockchain():
         # feature extraction of collected data on approached terminal
         feature_extractor_data = self.node.feature_extractor(data_sensory, Biometric_Processes.ENROLLMENT)
         feature_extractor_data["operation"] = "Feature Extraction"
+        feature_extractor_data["process_id"] = new_process_id
         print("- Extracted features requesting to be validated...")
         # extracted features on approached terminal
         decision = await self.pbft.validate_decision(feature_extractor_data, self.node)
@@ -52,12 +56,14 @@ class BioBlockchain():
         Args:
             process (str): type of authentication/recognition process
         """
+        new_process_id = ChainUtils.id()
         print("\n" + Fore.YELLOW + f"\n***\tStart of  {process}\t***" + Style.RESET_ALL)
         print("- Sensor scanning raw biometrics...")
         data_sensory = self.node.get_sensor_data()
         print("- Feature extractor processing raw data...")
         feature_extractor_data = self.node.feature_extractor(data_sensory, Biometric_Processes(process))
         feature_extractor_data["operation"] = "Feature Extraction"
+        feature_extractor_data["process_id"] = new_process_id
         # just for the showcase of successful authentication HARD SELECT of first user stored in the database
         first_user_key = next(iter(self.template_storage))
         feature_extractor_data["features"] = self.template_storage[first_user_key]
@@ -69,6 +75,7 @@ class BioBlockchain():
             # this should be done differently from the blockchain/or local state of nodes after last transaction(feature extraction)
             matcher_data = self.node.matcher(feature_extractor_data["features"], Biometric_Processes(process), claimed_identity)
             matcher_data["operation"] = "Matching"
+            matcher_data["process_id"] = new_process_id
             matcher_decision = await self.pbft.validate_decision(matcher_data, self.node)
             if matcher_decision:
                 print(Back.GREEN + Fore.WHITE + "- Match result has been consensually validated, succesfull " + matcher_data["process_type"] + "!" + Style.RESET_ALL)

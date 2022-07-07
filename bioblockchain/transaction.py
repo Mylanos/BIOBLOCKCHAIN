@@ -4,10 +4,6 @@ from datetime import datetime
 from json import dumps
 
 
-# TODO daj bacha na tie prevody stringov a adries(wallet)
-# TODO pridaj timestamp
-
-
 class Transaction:
     """
      Transaction class is holding certain data with accompanying info needed for it's verification
@@ -15,12 +11,14 @@ class Transaction:
     def __init__(self, data, wallet):
         # id of the transaction for search 
         self.id = ChainUtils.id()
-        # id of the operation
-        self.operation_id = ChainUtils.id()
+        # timestamp
+        self.timestamp = TimeUtils.my_date()
         # public key of the Transaction's sender 
         self.sender = wallet.verif_key
-        # data
-        self.payload = {"data": data, "timestamp": TimeUtils.my_date()}
+        # data with unique id of this transaction and timestamp
+        self.payload = {"tx_id": self.id, 
+                        "data": data, 
+                        "timestamp": self.timestamp}
         # hash of the data
         self.hash = ChainUtils.hash(dumps(self.payload))
         # signature of the data
@@ -59,12 +57,13 @@ class Transaction:
  
     def __str__(self) -> str:
         return (f"""
-            Transaction
-            From: {ChainUtils.string_from_verifkey(self.sender)}
-            Payload: {self.payload}
-            Hash: {self.hash}
-            Signature: {self.signature.hex()}
-        """)
+    Transaction 
+    ID: {self.id}
+    From: {ChainUtils.string_from_verifkey(self.sender)}
+    Payload: {dumps(self.payload, sort_keys=True, indent=4)}
+    Timestamp: {self.timestamp}
+    Hash: {self.hash}
+    Signature: {self.signature.hex()}""")
 
     def get_data(self):
         """

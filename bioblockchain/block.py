@@ -72,15 +72,15 @@ class Block:
         """
 
         return f"""
-        - - - - - - - - - - - - - - - - - Block - - - - - - - - - - - - - - - - - - - 
-        Timestamp   : {self.timestamp}
-        Last Hash   : {self._previous_hash.hexdigest()}
-        Hash        : {self._hash.hexdigest()}
-        Data        : \t{self.data}
-        Proposer    : {ChainUtils.string_from_verifkey(self.proposer) if type(self.proposer ) != str else self.proposer}
-        Signature   : {self.signature.hex()}
-        Sequence No : {self.seq_number}
-        - - - - - - - - - - - - - - - - - - - - - - - - - - -- - - - - - - - - - - - -
+- - - - - - - - - - - - - - - - - Block - - - - - - - - - - - - - - - - - - - 
+Timestamp   : {self.timestamp}
+Last Hash   : {self._previous_hash.hexdigest()}
+Hash        : {self._hash.hexdigest()}
+Data        : {self.data}
+Proposer    : {ChainUtils.string_from_verifkey(self.proposer) if type(self.proposer ) != str else self.proposer}
+Signature   : {self.signature.hex()}
+Sequence No : {self.seq_number}
+- - - - - - - - - - - - - - - - - - - - - - - - - - -- - - - - - - - - - - - -
         """
 
     @staticmethod
