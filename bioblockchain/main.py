@@ -1,7 +1,10 @@
+from ast import Pass
 import bioblockchain
 from bioblockchain.bioblockchain import BioBlockchain
 import asyncio
 from bioblockchain.parser import MyParser
+from bioblockchain.utils import ChainUtils
+from bioblockchain.wallet import Wallet
 
 def query_yes_no(question, default="yes"):
     """
@@ -31,14 +34,38 @@ def run():
     """
     parser = MyParser()
     bio_blockchain = BioBlockchain(parser.verbose)
-    asyncio.run(bio_blockchain.run_enrollment())
-    # call retrieves first user in the database in form of his key()
-    claimed_identity = next(iter(bio_blockchain.template_storage))
-    asyncio.run(bio_blockchain.run_authentication("verification", claimed_identity=claimed_identity))
-    asyncio.run(bio_blockchain.run_authentication("identification"))
+
+    if parser.unknown_user_verification:
+        asyncio.run(bio_blockchain.run_enrollment())
+        unknown_user = Wallet("I am malicious attacker, not enrolled in the system!")
+        claimed_identity = ChainUtils.string_from_verifkey(unknown_user.verif_key)
+        print("")
+        asyncio.run(bio_blockchain.run_authentication("verification", claimed_identity=claimed_identity))
+    elif parser.feature_extraction_fail:
+        asyncio.run(bio_blockchain.run_enrollment(compromised=True))
+    elif parser.node_malfunction_always_true:
+        node = bio_blockchain.get_random_node()
+        node.always_true = True
+        asyncio.run(bio_blockchain.run_enrollment(compromised=True))
+    elif parser.node_malfunction_always_false:
+        node = bio_blockchain.get_random_node()
+        node.always_false = True
+        asyncio.run(bio_blockchain.run_enrollment())
+        print("")
+        asyncio.run(bio_blockchain.run_authentication("identification"))
+    else:
+        asyncio.run(bio_blockchain.run_enrollment())
+        # call retrieves first user in the database in form of his key()
+        claimed_identity = next(iter(bio_blockchain.template_storage))
+        print("")
+        # asyncio.run(bio_blockchain.run_authentication("verification", claimed_identity=claimed_identity))
+        print("")
+        asyncio.run(bio_blockchain.run_authentication("identification"))
+
     if parser.verbose:
         if query_yes_no("Do you want to display the contents of blockchain?"):
             bio_blockchain.blockchain.display_chain()
+            
     print(bio_blockchain.template_storage)
 
 

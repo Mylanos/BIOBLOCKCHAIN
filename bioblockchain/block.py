@@ -93,7 +93,7 @@ Sequence No : {self.seq_number}
         proposer = Wallet("B!0BL0CKCH41N")
         previous_hash = ChainUtils.hash("This is the previous hash for genesis block")
         now = TimeUtils.my_date()
-        genesis_tx = Transaction("GENESIS BLOCK", proposer)
+        genesis_tx = Transaction({"data": "GENESIS BLOCK", "process_id": 42, "location": "Dornbirn"}, proposer)
         content = Block.block_content_to_json(now, previous_hash, genesis_tx)
         hash = ChainUtils.hash(content)
         return Block(now, previous_hash, hash, 
@@ -193,5 +193,12 @@ Sequence No : {self.seq_number}
             bool: True if valid proposer, else False
         """
         return (self.proposer == wallet.verif_key)
+
+    def search_by_process(self, process_id):
+        data = self.data.get_data()
+        if data["process_id"] == process_id:
+            return data
+        else:
+            return None
 
     

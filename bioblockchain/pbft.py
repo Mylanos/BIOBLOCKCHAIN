@@ -51,7 +51,7 @@ class PBFT:
 
 
     # broadcasts transactions
-    async def validate_decision(self, data, user):
+    async def validate_decision(self, transaction_data, biometric_data, user):
         """interface of the pbft protocol where the Transaction is made for given operation and broadcasts request to validate decision/operation to PBFT 
 
         Args:
@@ -61,11 +61,10 @@ class PBFT:
         Returns:
             Bool: result of the validation
         """
-        transaction = Transaction(data, user.wallet)
-        print(f"""- Creating new validation request for {data["operation"]}({data["process_type"]})!""")
-        await self.broadcast_request(transaction, user)
-        # hard validated
-        return True
+        transaction = Transaction(transaction_data, user.wallet)
+        content = {"consensus_object": transaction, "biometrics": biometric_data}
+        print(f"""- Creating new validation request for {transaction_data["operation"]}({transaction_data["process_type"]})!""")
+        await self.broadcast_request(content, user)
 
     # broadcasts transactions
     async def validate_block(self, block, user):
@@ -74,14 +73,11 @@ class PBFT:
         Args:
             block (Block): proposed Block 
             user (Node): entry Node proposing the block
-        
-        Returns:
-            Bool: result of the validation
         """
-        print(Fore.CYAN + f"""- Creating new validation request for new Block proposal!""" + Style.RESET_ALL)
-        await self.broadcast_request(block, user)
-        # hard validated
-        return True
+        content = {"consensus_object": block, "biometrics": None}
+
+        print(f"""- Creating new validation request for new Block proposal!""")
+        await self.broadcast_request(content, user)
 
     async def broadcast_request(self, content, from_node):
         """brodcasts new request to all nodes in the network
@@ -93,6 +89,7 @@ class PBFT:
         """
         print(Fore.BLUE + "----------------PBFT START----------------" + Style.RESET_ALL)
         # await self.round_robin()
+ 
         await asyncio.gather(*(self.message_handler(Message(PBFT_Message.REQUEST, from_node, content=content), val) for val in self.nodes))
 
     async def broadcast_pre_prepare(self, content=None, from_node=None):
@@ -197,8 +194,8 @@ class PBFT:
                     else:
                         print(Fore.CYAN + f'- NODE{recipient.id} (INIT) \t\t received message({json.dumps(message.ttype)})')
                 # check if the PBFT is going to validate Transaction or new Block
-                if isinstance(message.content, Transaction):
-                    transaction = message.content
+                if isinstance(message.content["consensus_object"], Transaction):
+                    transaction = message.content["consensus_object"]
                     if transaction.verify_transaction():
                         msg_hash = recipient.add_request_to_log(message)
                         # only current leader can start new round by broadcasting pre prepare
@@ -212,8 +209,8 @@ class PBFT:
 
                     else:
                         raise("Unsuccesful verification of sent transaction!")
-                if isinstance(message.content, Block):
-                    block = message.content
+                if isinstance(message.content["consensus_object"], Block):
+                    block = message.content["consensus_object"]
                     if block.verify_block():
                         msg_hash = recipient.add_request_to_log(message)
                         if self.is_leader(recipient):
@@ -221,9 +218,6 @@ class PBFT:
                             content = {"msg_hash": msg_hash, "seq": seq, "view": view}
                             await self.broadcast_pre_prepare(content=content, from_node=recipient)
                             print(Fore.BLUE  + "----------------PBFT END----------------" + Style.RESET_ALL)   
-                            recipient.add_block_to_blockchain(block)
-
-                    
             else:
                 raise("Unsuccesful verification of receiving node!")
         elif message.ttype == PBFT_Message.PRE_PREPARE:
@@ -269,13 +263,17 @@ class PBFT:
             if log.commit_flag and not log.reply_sent:
                 decision = None
                 # validation of proposed block by given peer
-                if isinstance(log.message.content, Block):
-                    decision = recipient.verify_block(log.message.content)
+                if isinstance(log.message.content["consensus_object"], Block):
+                    decision = recipient.verify_block(log.message.content["consensus_object"])
                 # execution of the validated operation(feature extraction / matching)
                 else:
-                    decision = recipient.verify_decision(log.message.content)
-                if self.verbose:
-                    print(f"- NODE{recipient.id} (COMMITS:{log.commit_count})\t validated!, sending \"REPLY\" message!")
+                    decision = recipient.verify_decision(log.message.content["consensus_object"], log.message.content["biometrics"])
+           
+                if decision:
+                    print(Fore.GREEN + f"- NODE{recipient.id} (COMMITS:{log.commit_count})\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
+                else:
+                    print(Fore.RED + f"- NODE{recipient.id} (COMMITS:{log.commit_count})\t failed validation!, sending \"REPLY\" message!" + Fore.CYAN)
+
                 log.reply_sent = True
                 content = message.content["msg_hash"], decision
                 reply = Message(PBFT_Message.REPLY, recipient, content)
@@ -284,12 +282,13 @@ class PBFT:
         elif message.ttype == PBFT_Message.REPLY:
             msg_hash, decision = message.content
             # received replies counting
-            log = await recipient.received_reply(msg_hash)
+            log = await recipient.received_reply(msg_hash, decision)
             if self.verbose:
-                print(f'- NODE{recipient.id} (REPLIES:{log.reply_count - 1}->{log.reply_count})\t received message({json.dumps(message.ttype)})')
+                print(f'- NODE{recipient.id} (REPLIES:{log.reply_count_agree - 1}->{log.reply_count_agree})\t received message({json.dumps(message.ttype)})')
             if log.reply_flag and not log.reply_operation_executed:
+                print(Fore.GREEN + "- Enough replies have been received!" + Style.RESET_ALL)
+                recipient.execute_operation(log)
                 log.reply_operation_executed = True
-                print(Fore.GREEN + "- Enough replies have been received, request has been executed and succesfully validated!" + Style.RESET_ALL)
             
     
 """
@@ -334,31 +333,4 @@ spravu Prepare všetkym ostatnym nodom v sieti.
 """
 node is considered prepared when it has seen request from the primary node, has pre-prepared and has seen 2f prepare messages that matches pre-prepare(looking for 2f+1 prepares)
 when nodes are prepared they sent commit message, if a node has seen f+1 valid commit messages, they carry out the client request and sendout a reply to the client
-"""
-
-"""
-data = {"id": 1234,
-        "room-entered": "E104",
-        "verificated": True,
-        "entered-by": "Alice"}
-
-data2 = {"id": 3434,
-            "room-entered": "E105",
-            "verificated": False,
-            "entered-by": "Alice"}
-
-data3 = {"id": 3714,
-            "room-entered": "D105",
-            "verificated": True,
-            "entered-by": "Stephan"}
-
-data4 = {"id": 9834,
-            "room-entered": "D105",
-            "verificated": False,
-            "entered-by": "Stephan"}
-
-data5 = {"id": 4324,
-            "content": "osjf-fsafsaf-asdfdsf-sff",
-            "req_type": "match",
-            "req-by": "node_xyz"}
 """

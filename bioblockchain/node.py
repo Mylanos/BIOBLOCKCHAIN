@@ -1,12 +1,16 @@
+from cmd import IDENTCHARS
 from enum import Enum
-from hashlib import blake2b
+from hashlib import blake2b, md5
 import bioblockchain.config as config
 import random, string
 from bioblockchain.message import MessageLogged
 from bioblockchain.utils import ChainUtils
 from bioblockchain.wallet import Wallet
 from json import dumps
-from colorama import Fore
+from colorama import Back, Fore, Style
+
+from bioblockchain.transaction import Transaction
+from bioblockchain.block import Block
 
 class Biometric_Processes(str, Enum):
     """processes in biometric systems
@@ -41,33 +45,44 @@ class Node:
         self.request_sequence_num = 0
         #TODO figure out how the views are represented
         self.current_view = 0
-        
-    def matcher(self, features, mode, claimed_identity):
+        # malfunctionous node always returns YES/NO
+        self.always_true = False
+        self.always_false = False
+
+    def matcher(self, features, mode, claimed_identity, process_id):
         data = {}
+        data["operation"] = "Matching"
+        data["process_id"] = process_id
         if mode == Biometric_Processes.IDENTIFICATION:
             # search is made by 1:M comparison, in real world scenario templates/biometrics wouldnt be perfectly same
             result = self.features_in_database(features)
+            data["process_type"] = "identification"
+            data["match_timestamp"] = "12.07.1999"
+
             if result:      
                 data["user"] = result
-                data["match_timestamp"] = "12.07.1999"
                 data["score"] = 87
-                data["decision"] = True
+                data["success"] = True
             else:
-                #TODO do not raise an exception here, conclude and handle as a failed match
-                raise Exception("Failed to find similar biometrics in the system: Identification failed!")
+                data["user"] = None
+                data["success"] = False
+                data["score"] = 23
         if mode == Biometric_Processes.VERIFICATION:
             # search is made by 1:1 comparison, in real world scenario templates/biometrics wouldnt be perfectly same
             result = self.claimed_identity_in_database(features, claimed_identity)
+            data["process_type"] = "verification"
+            data["claimed_identity"] = claimed_identity
+            data["match_timestamp"] = "12.07.1999"
             if result:      
                 data["user"] = result
-                data["claimed_identity"] = claimed_identity
-                data["match_timestamp"] = "12.07.1999"
+                # maybe do custom scores
                 data["score"] = 87
-                data["decision"] = True
+                data["success"] = True
             else:
-                #TODO do not raise an exception here, conclude and handle as a failed match
-                raise Exception("Failed to find similar biometrics in the system: Identification failed!")
-        data["process_type"] = mode.value
+                data["user"] = None
+                data["success"] = False
+                data["score"] = 23
+        
         return data
 
     def features_in_database(self, features):
@@ -97,8 +112,10 @@ class Node:
         Returns:
             str: string representation of found user's key/identifier or None
         """
+        # search for claimed user in DB
         search_result = self.search_user_in_database(claimed_identity)
         if search_result:
+            # compare features of the user found by claimed_identity
             if self.template_storage[search_result] == features:
                 return search_result
         return None
@@ -183,24 +200,25 @@ class Node:
                 return key
         return None
     
-    def store_features(self, features):
+    def store_features(self, features, new_user):
         """store features in template storage
 
         Args:
             features (Str): string features to be stored
         """
-        new_user = Wallet(''.join(random.choices(string.ascii_letters + string.digits, k=10)))
         self.users.append(new_user)
-        new_user_pub_key = ChainUtils.string_from_verifkey(new_user.verif_key)
-        self.template_storage[new_user_pub_key] = features
+        self.template_storage[new_user] = features
 
-    def get_sensor_data(self):
+    def get_sensor_data(self, string):
         """naive way of acquiring sensor biometric data
 
         Returns:
             Str: string representation of acquired biometric data
         """
-        return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+        # return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+        h = md5(bytes(string, encoding='utf8'))
+        raw_data = h.hexdigest()
+        return raw_data
 
     def extract(self, data):
         """naive way of extracting features from biometric data
@@ -211,12 +229,11 @@ class Node:
         Returns:
             Str: string representation of extracted features
         """
-        h = blake2b(digest_size=20)
-        h.update(bytes(data, encoding='utf8'))
+        h = md5(bytes(data, encoding='utf8'))
         features = h.hexdigest()
         return features
 
-    def feature_extractor(self, data_sensory, process_type):
+    def feature_extractor(self, data_sensory, process_type, process_id, compromised=False):
         """simulation of feature extraction component
 
         Args:
@@ -230,18 +247,32 @@ class Node:
             Dict: json/dict data containing acquired information with timestamps
         """
         # provisional feature extraction
-        features = self.extract(data_sensory)
-        data = {}
+        features = None
+        if compromised:
+            features = "This is a representation of artificial features, set by the attacker who compromised one node!"
+        else:
+            features = self.extract(data_sensory)
+        transaction_data = {}
+        biometric_data = {}
         if process_type == Biometric_Processes.ENROLLMENT:
             if self.features_in_database(features):
                 raise Exception("Features were already enrolled: Operation forbidden!")
-            
-        data["sensor_data"] = data_sensory
-        data["features"] = features
-        data["extraction_timestamp"] = "12.07.1999"
-        data["process_type"] = dumps(process_type)
+            new_user = Wallet(''.join(random.choices(string.ascii_letters + string.digits, k=10)))
+            transaction_data["user"] = ChainUtils.string_from_verifkey(new_user.verif_key)
+            transaction_data["process_type"] = "enrollment"
 
-        return data
+        elif process_type == Biometric_Processes.VERIFICATION:
+            transaction_data["process_type"] = "verification"
+        elif process_type == Biometric_Processes.IDENTIFICATION:
+            transaction_data["process_type"] = "identification"
+        biometric_data["sensor_data"] = data_sensory
+        biometric_data["features"] = features
+        transaction_data["operation"] = "Feature Extraction"
+        transaction_data["success"] = True
+        transaction_data["extraction_timestamp"] = "12.07.1999"
+        transaction_data["process_id"] = process_id
+
+        return biometric_data, transaction_data
 
     def add_transaction(self, transaction):
         """add transaction to the queue waiting for block proposal
@@ -263,9 +294,9 @@ class Node:
         """
         #TODO features are generated randomly, cant compare them expressively
         #TODO certain biometric systems are returning a score of similarity
-        return True
+        return features1 == features2
 
-    def verify_decision(self, transaction):
+    def verify_decision(self, transaction, biometrics):
         """verifies the transaction 
 
         Args:
@@ -276,31 +307,36 @@ class Node:
         """
         self.add_transaction(transaction)
         data = transaction.get_data()
+        if self.always_false:
+            return False
+        if self.always_true:
+            return True
         if data["operation"] == "Feature Extraction":
-            features = self.extract(data["sensor_data"])
+            features = self.extract(biometrics["sensor_data"])
             print(Fore.CYAN + f'- NODE{self.id}\t\t\t executing feature extraction')
-
-            if self.compare_features(features, data["features"]):
+            if self.compare_features(features, biometrics["features"]):
                 return True
             else:
                 return False
         if data["operation"] == "Matching":
             print(Fore.CYAN + f'- NODE{self.id}\t\t\t executing matching ' + data["process_type"])
-            #check if the user
-            searched_features = self.search_user_in_database(data["user"])
-            if searched_features:
-                if Biometric_Processes(data["process_type"]) == Biometric_Processes.VERIFICATION.value:
-                    result = self.claimed_identity_in_database(searched_features, data["claimed_identity"])
-                    if result:
+            # firstly check if the proposed user is in database
+            if Biometric_Processes(data["process_type"]) == Biometric_Processes.VERIFICATION.value:
+                result = self.claimed_identity_in_database(biometrics["features"], data["claimed_identity"])
+                if result:
+                    # check if the users found are the same as proposed
+                    if result == data["user"]:
                         return True
-                    else:
-                        return False
-                if Biometric_Processes(data["process_type"]) == Biometric_Processes.IDENTIFICATION.value:
-                    result = self.features_in_database(searched_features)
-                    if result:
+                else:
+                    return False
+            if Biometric_Processes(data["process_type"]) == Biometric_Processes.IDENTIFICATION.value:
+                result = self.features_in_database(biometrics["features"])
+                if result:
+                    # check if found user for given features is the same as proposed one
+                    if result == data["user"]:
                         return True
-                    else:
-                        return False
+                else:
+                    return False
 
     def verify_block(self, block):
         """
@@ -312,6 +348,10 @@ class Node:
         Returns:
             Bool: is the block valid or not
         """
+        if self.always_false:
+            return False
+        if self.always_true:
+            return True
         print(Fore.CYAN + f'- NODE{self.id}\t\t\t is validating the proposed block!')
         return block.verify_block()
 
@@ -345,7 +385,7 @@ class Node:
             exit(1)
         return log
     
-    async def received_reply(self, msg_hash):
+    async def received_reply(self, msg_hash, decision):
         """update the count of received replies
 
         Args:
@@ -355,9 +395,15 @@ class Node:
             MessageLog: log of message that received prepare message
         """
         log = self.search_log_msghash(msg_hash)
-        log.reply_count += 1   
-        if log.reply_count >= config.MIN_REPLY:
+        if decision:
+            log.reply_count_agree += 1   
+        else:
+            log.reply_count_disagree += 1
+        if log.reply_count_agree >= config.MIN_REPLY:
+            log.reply_flag = True
+        if log.reply_count_disagree >= config.MIN_REPLY:
             log.reply_flag = True 
+            log.disagreement = True
         return log
     
     async def received_commit(self, msg_hash):
@@ -403,3 +449,33 @@ class Node:
         """
         block = self.blockchain.create_block(transaction, self.wallet)
         return block
+
+    def execute_operation(self, log):
+        consensus_object = log.message.content["consensus_object"]
+        biometrics = log.message.content["biometrics"]
+        if isinstance(consensus_object, Transaction):
+            data = consensus_object.get_data()
+            if data["operation"] == "Feature Extraction":
+                if data["success"]:
+                    if not log.disagreement:
+                        print(Back.GREEN + Fore.WHITE + "- Feature extraction result has been validated!" + Style.RESET_ALL)
+                        if Biometric_Processes(data["process_type"]) == Biometric_Processes.ENROLLMENT.value:
+                            print(Fore.GREEN + "- Storing features into database!"+ Style.RESET_ALL)
+                            self.store_features(biometrics["features"], data["user"])
+                        else:
+                            print(Fore.GREEN + "- Features have been validated and prepared for transmission to matcher!"+ Style.RESET_ALL)
+                    else:
+                        print(Fore.YELLOW + "- Proposed matching result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
+                        data["success"] = False
+                        consensus_object.update_transaction(data, self.wallet)
+                else:
+                    print(Back.RED + Fore.WHITE + "- Feature extraction result has not been validated, failed " + data["process_type"] + "!" + Style.RESET_ALL)
+            if data["operation"] == "Matching":
+                if data["success"]:
+                    print(Back.GREEN + Fore.WHITE + "- Matching result has been validated, succesfull " + data["process_type"] + "!" + Style.RESET_ALL)
+                else:
+                    print(Back.RED + Fore.WHITE + "- Matching result has not been validated, failed " + data["process_type"] + "!" + Style.RESET_ALL)
+        elif isinstance(consensus_object, Block):
+            print(Back.GREEN + Fore.WHITE + "- Block has been validated, succesfull block proposal!" + Style.RESET_ALL)
+            self.add_block_to_blockchain(consensus_object)
+    

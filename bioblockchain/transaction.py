@@ -73,3 +73,9 @@ class Transaction:
             Dict: dictionary with data
         """
         return self.payload["data"]
+
+    def update_transaction(self, data, node):
+        self.payload["data"] = data
+        self.hash = ChainUtils.hash(dumps(self.payload))
+        # signature of the data
+        self.signature = node.sign_data(self.payload)

@@ -74,6 +74,13 @@ class Blockchain:
             Block objectr: latest block object appended to the blockchain
         """
         return self.chain[-1]
+    
+    def search_by_process(self, process_id):
+        for block in self.chain:
+            result = block.search_by_process(process_id)
+            if result:
+                return result
+        return None
 
 
 if __name__ == "__main__":

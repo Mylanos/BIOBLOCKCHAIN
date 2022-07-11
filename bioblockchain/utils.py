@@ -111,8 +111,9 @@ class ChainUtils:
             data_bytes = dumps(data)
             public_key.verify(signature, data_bytes, hashfunc=sha256)
             return True
-        except BadSignatureError as e:
-            raise BadSignatureError('Signature is not valid!')
+        except Exception as e:
+            print("Signature is not valid!")
+            return False
 
     @staticmethod
     def string_from_verifkey(verifying_key):

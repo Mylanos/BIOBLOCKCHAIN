@@ -39,10 +39,13 @@ class Message:
         dictionary = {}
         if self.ttype == PBFT_Message.REQUEST:
             dictionary = {"ttype": json.dumps(self.ttype)}
-            if isinstance(self.content, Transaction):
-                dictionary["content"] = self.content.toJSON()
-            elif isinstance(self.content, Block):
-                dictionary["content"] = Block.block_content_to_json(self.content.timestamp, self.content.previous_hash, self.content.data)
+            if isinstance(self.content["consensus_object"], Transaction):
+                biom = self.content["biometrics"]
+                tx = self.content["consensus_object"]
+                dictionary["content"] = {"consensus_object": tx.toJSON(), "biometrics": biom}
+            elif isinstance(self.content["consensus_object"], Block):
+                block = self.content["consensus_object"]
+                dictionary["content"] = Block.block_content_to_json(block.timestamp, block.previous_hash, block.data)
             else: 
                 dictionary["content"] = self.content               
             dictionary["sender"] = ChainUtils.string_from_verifkey(self.sender.wallet.verif_key)
@@ -73,10 +76,12 @@ class MessageLogged:
         self.message = message
         self.prepare_count = 0
         self.commit_count = 0
-        self.reply_count = 0
+        self.reply_count_agree = 0
+        self.reply_count_disagree = 0
         self.prepare_flag = False
         self.commit_flag = False
         self.reply_flag = False
+        self.disagreement = False
         self.reply_operation_executed = False
         self.commit_sent = False
         self.reply_sent = False

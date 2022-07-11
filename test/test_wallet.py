@@ -5,12 +5,6 @@ from bioblockchain.wallet import Wallet
 from bioblockchain.utils import ChainUtils
 from json import dumps
 
-"""class ChainUtilsTestCase(unittest.TestCase):
-    def HashTestCase(self):
-        ChainUtils.hash(dumps(self.payload))
-"""
-
-
 class WalletTestCase(unittest.TestCase):
     def setUp(self):
         self.secret_phrase = "Super Secret Phrase"
