@@ -53,6 +53,7 @@ class Node:
         data = {}
         data["operation"] = "Matching"
         data["process_id"] = process_id
+        data["approached_node"] = f"NODE{self.id}"
         if mode == Biometric_Processes.IDENTIFICATION:
             # search is made by 1:M comparison, in real world scenario templates/biometrics wouldnt be perfectly same
             result = self.features_in_database(features)
@@ -269,6 +270,7 @@ class Node:
         biometric_data["features"] = features
         transaction_data["operation"] = "Feature Extraction"
         transaction_data["success"] = True
+        transaction_data["approached_node"] = f"NODE{self.id}"
         transaction_data["extraction_timestamp"] = "12.07.1999"
         transaction_data["process_id"] = process_id
 
