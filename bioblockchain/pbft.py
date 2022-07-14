@@ -244,7 +244,7 @@ class PBFT:
             # received prepares counting
             log = await recipient.received_prepare(msg_hash)
             if self.verbose:
-                print(f'- NODE{recipient.id} (PREPARES:{log.prepare_count - 1}->{log.prepare_count})\t received message({json.dumps(message.ttype)})')
+                print(f'- NODE{recipient.id} (PREPARES:{log.prepare_count - recipient.weight}->{log.prepare_count})\t received message({json.dumps(message.ttype)})')
             seq = message.content["seq"]
             view = message.content["view"]
             if log.prepare_flag and not log.commit_sent:
@@ -258,7 +258,7 @@ class PBFT:
             # received commits counting
             log = await recipient.received_commit(msg_hash)
             if self.verbose:
-                print(Fore.CYAN + f'- NODE{recipient.id} (COMMITS:{log.commit_count - 1}->{log.commit_count})\t received message({json.dumps(message.ttype)})')
+                print(Fore.CYAN + f'- NODE{recipient.id} (COMMITS:{log.commit_count - recipient.weight}->{log.commit_count})\t received message({json.dumps(message.ttype)})')
             # if there was enough commit messages, another round is ready to go underway
             if log.commit_flag and not log.reply_sent:
                 decision = None
@@ -284,7 +284,7 @@ class PBFT:
             # received replies counting
             log = await recipient.received_reply(msg_hash, decision)
             if self.verbose:
-                print(f'- NODE{recipient.id} (REPLIES:{log.reply_count_agree - 1}->{log.reply_count_agree})\t received message({json.dumps(message.ttype)})')
+                print(f'- NODE{recipient.id} (REPLIES:{log.reply_count_agree - recipient.weight}->{log.reply_count_agree})\t received message({json.dumps(message.ttype)})')
             if log.reply_flag and not log.reply_operation_executed:
                 print(Fore.GREEN + "- Enough replies have been received!" + Style.RESET_ALL)
                 recipient.execute_operation(log)

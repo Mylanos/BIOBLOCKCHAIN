@@ -21,3 +21,13 @@ MIN_REPLY = MAX_FAULT + 1
 
 #: ammount of items in list for round robin looping
 ITER_LIST_AMMOUNT = 8 * NUM_NODES
+
+
+#: minimum weight of prepares needed to enter commit phase
+MIN_WEIGHT_PREPARE = (2 / 3) - 0.25
+
+#: minimum weight of commits needed to enter reply phase
+MIN_WEIGHT_COMMIT = 2 / 3
+
+#: minimum weight of replies needed to respond to the request
+MIN_WEIGHT_REPLY = 2 / 3

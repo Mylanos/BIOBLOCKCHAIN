@@ -1,6 +1,7 @@
 from cmd import IDENTCHARS
 from enum import Enum
 from hashlib import blake2b, md5
+from lib2to3.pytree import convert
 import bioblockchain.config as config
 import random, string
 from bioblockchain.message import MessageLogged
@@ -48,6 +49,8 @@ class Node:
         # malfunctionous node always returns YES/NO
         self.always_true = False
         self.always_false = False
+        # weigh of the node
+        self.weight = 1 / config.NUM_PARTICIPATING_NODES
 
     def matcher(self, features, mode, claimed_identity, process_id):
         data = {}
@@ -377,8 +380,8 @@ class Node:
         """
         log = self.search_log_msghash(msg_hash)
         if log:
-            log.prepare_count += 1   
-            if log.prepare_count >= config.MIN_PREPARE:
+            log.prepare_count += self.weight 
+            if log.prepare_count >= config.MIN_WEIGHT_PREPARE:
                 log.prepare_flag = True
         else:
             print("DIDNT FIND A MESSAGE WITH HASH " + msg_hash)
@@ -396,12 +399,12 @@ class Node:
         """
         log = self.search_log_msghash(msg_hash)
         if decision:
-            log.reply_count_agree += 1   
+            log.reply_count_agree += self.weight   
         else:
-            log.reply_count_disagree += 1
-        if log.reply_count_agree >= config.MIN_REPLY:
+            log.reply_count_disagree += self.weight
+        if log.reply_count_agree >= config.MIN_WEIGHT_REPLY:
             log.reply_flag = True
-        if log.reply_count_disagree >= config.MIN_REPLY:
+        if log.reply_count_disagree >= config.MIN_WEIGHT_REPLY:
             log.reply_flag = True 
             log.disagreement = True
         return log
@@ -416,8 +419,8 @@ class Node:
             MessageLog: log of message that received prepare message
         """
         log = self.search_log_msghash(msg_hash)
-        log.commit_count += 1   
-        if log.commit_count >= config.MIN_COMMIT:
+        log.commit_count += self.weight   
+        if log.commit_count >= config.MIN_WEIGHT_COMMIT:
             log.commit_flag = True
         return log
 
