@@ -261,28 +261,28 @@ class PBFT:
                 print(Fore.CYAN + f'- NODE{recipient.id} (COMMITS:{log.commit_count - 1}->{log.commit_count})\t received message({json.dumps(message.ttype)})')
             # if there was enough commit messages, another round is ready to go underway
             if log.commit_flag and not log.reply_sent:
-                decision = None
+                result = None
                 # validation of proposed block by given peer
                 if isinstance(log.message.content["consensus_object"], Block):
-                    decision = recipient.verify_block(log.message.content["consensus_object"])
+                    result = recipient.verify_block(log.message.content["consensus_object"])
                 # execution of the validated operation(feature extraction / matching)
                 else:
-                    decision = recipient.verify_decision(log.message.content["consensus_object"], log.message.content["biometrics"])
+                    result = recipient.verify_decision(log.message.content["consensus_object"], log.message.content["biometrics"])
            
-                if decision:
-                    print(Fore.GREEN + f"- NODE{recipient.id} (COMMITS:{log.commit_count})\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
-                else:
+                if result:
                     print(Fore.RED + f"- NODE{recipient.id} (COMMITS:{log.commit_count})\t failed validation!, sending \"REPLY\" message!" + Fore.CYAN)
+                else:
+                    print(Fore.GREEN + f"- NODE{recipient.id} (COMMITS:{log.commit_count})\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
 
                 log.reply_sent = True
-                content = message.content["msg_hash"], decision
+                content = message.content["msg_hash"],result
                 reply = Message(PBFT_Message.REPLY, recipient, content)
                 await self.message_handler(reply, log.message.sender)
 
         elif message.ttype == PBFT_Message.REPLY:
-            msg_hash, decision = message.content
+            msg_hash,result = message.content
             # received replies counting
-            log = await recipient.received_reply(msg_hash, decision)
+            log = await recipient.received_reply(msg_hash,result)
             if self.verbose:
                 print(f'- NODE{recipient.id} (REPLIES:{log.reply_count_agree - 1}->{log.reply_count_agree})\t received message({json.dumps(message.ttype)})')
             if log.reply_flag and not log.reply_operation_executed:

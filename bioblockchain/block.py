@@ -1,5 +1,6 @@
 from hashlib import sha256
-from bioblockchain.utils import ChainUtils, TimeUtils
+from bioblockchain.chain_utils import ChainUtils
+from bioblockchain.time_utils import TimeUtils
 from bioblockchain.wallet import Wallet
 from bioblockchain.transaction import Transaction
 import json
@@ -97,7 +98,7 @@ Sequence No : {self.seq_number}
         content = Block.block_content_to_json(now, previous_hash, genesis_tx)
         hash = ChainUtils.hash(content)
         return Block(now, previous_hash, hash, 
-                     genesis_tx, proposer.verif_key, proposer.sign_data(content), 0)
+                     genesis_tx, proposer.verif_key, proposer.sign(content), 0)
     
     
     @staticmethod
@@ -119,7 +120,7 @@ Sequence No : {self.seq_number}
 
         content = Block.block_content_to_json(timestamp, previous_hash, data)
         block_hash = ChainUtils.hash(content)
-        signature = proposer_wallet.sign_data(content)
+        signature = proposer_wallet.sign(content)
         return Block(timestamp, previous_hash, block_hash, 
                      data, proposer, signature, seq_number)
 

@@ -4,7 +4,8 @@ import bioblockchain.config as config
 from bioblockchain.node import Node, Biometric_Processes
 from colorama import Fore, Style, Back
 from bioblockchain.pbft import PBFT
-from bioblockchain.utils import ChainUtils
+from bioblockchain.chain_utils import ChainUtils
+from bioblockchain.wallet import Wallet
 
 class BioBlockchain():
     """
@@ -25,7 +26,7 @@ class BioBlockchain():
         self.pbft = PBFT(self.nodes, verbosity)
         self.node = self.get_random_node()
 
-    async def run_enrollment(self, compromised=False):
+    async def run_enrollment(self, compromised_feature_extractor=False):
         """
         run_enrollment showcases enrollment scenario of a new user to the biometric system
         """
@@ -37,15 +38,14 @@ class BioBlockchain():
         data_sensory = self.node.get_sensor_data(f"Naive way of acquiring raw data from sensor for simulating successfull sensor operation!")
         print("- Feature extractor processing raw data...")
         # feature extraction of collected data on approached terminal
-        biometric_data, feature_extraction_data = self.node.feature_extractor(data_sensory, Biometric_Processes.ENROLLMENT, new_process_id, compromised=compromised)
-        feature_extraction_data["process_id"] = new_process_id
+        biometric_data, feature_extraction_data = self.node.feature_extractor(data_sensory, Biometric_Processes.ENROLLMENT, new_process_id, compromised_feature_extractor=compromised_feature_extractor)
         print("- Extracted features requesting to be validated...")
         # extracted features on approached terminal
         await self.pbft.validate_decision(feature_extraction_data, biometric_data, self.node)
         #print(Fore.RED + "System haven't received enough replies for consensus on the enroll request!"+ Style.RESET_ALL)
         print(Back.YELLOW + Fore.WHITE +"***\tEND OF ENROLLMENT\t\t***" + Style.RESET_ALL)
 
-    async def run_authentication(self, process, claimed_identity = None, success = True):
+    async def run_authentication(self, process, claimed_identity = None, correct_biometrics = True, unknown_user = False):
         """run_authentication_success showcases identification or verification scenario in the biometric system
 
         Args:
@@ -54,12 +54,20 @@ class BioBlockchain():
         new_process_id = ChainUtils.id()
         print(Back.YELLOW + Fore.WHITE + f"\n***\tSTART OF {process.upper()}\t\t\t***{Style.RESET_ALL}")
         print("- Sensor scanning raw biometrics...")
-        data_sensory = self.node.get_sensor_data(f"Naive way of acquiring raw data from sensor for simulating successfull sensor operation!")
+        data_sensory = None
+        if correct_biometrics:
+            data_sensory = self.node.get_sensor_data(f"Naive way of acquiring raw data from sensor for simulating successfull sensor operation!")
+        else:
+            data_sensory = self.node.get_sensor_data(f"Naive way of acquiring raw data from sensor for simulating unsuccessfull sensor operation!")
         print("- Feature extractor processing raw data...")
         biometric_data, feature_extraction_data = self.node.feature_extractor(data_sensory, Biometric_Processes(process), new_process_id)
-        # just for the showcase of successful authentication HARD SELECT of first user stored in the database
-        first_user_key = next(iter(self.template_storage))
-        biometric_data["features"] = self.template_storage[first_user_key]
+
+        if unknown_user:
+            claimed_identity = "Attackers unknown identity"
+        else:
+            claimed_identity = next(iter(self.template_storage))
+        #unknown_user = Wallet("I am malicious attacker, not enrolled in the system!")
+        #claimed_identity = ChainUtils.string_from_verifkey(unknown_user.verif_key)
         print("- Extracted features requesting to be validated...")
         # self.node represents one node in the network making validating request to others
         await self.pbft.validate_decision(feature_extraction_data, biometric_data, self.node)

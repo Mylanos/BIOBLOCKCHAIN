@@ -106,5 +106,4 @@ if __name__ == "__main__":
     last_block = blockchain.last_block
 
     print(block2.verify_proposer(proposer2))
-    print(blockchain.is_valid_block(block2))
 

@@ -4,13 +4,17 @@ from hashlib import blake2b, md5
 import bioblockchain.config as config
 import random, string
 from bioblockchain.message import MessageLogged
-from bioblockchain.utils import ChainUtils
+from bioblockchain.chain_utils import ChainUtils
 from bioblockchain.wallet import Wallet
 from json import dumps
 from colorama import Back, Fore, Style
 
 from bioblockchain.transaction import Transaction
 from bioblockchain.block import Block
+
+# TODO pri faily/ovladnuti feature extractoru sa stale ukladaju featury ktore odoslal ten zly node
+# TODO sprav nejak ukladanie odpoved z nodu ak sa featury nezhoduju a pri dostatočnom počte hlasov pre
+# TODO dane featury ulož do databaze
 
 class Biometric_Processes(str, Enum):
     """processes in biometric systems
@@ -234,7 +238,7 @@ class Node:
         features = h.hexdigest()
         return features
 
-    def feature_extractor(self, data_sensory, process_type, process_id, compromised=False):
+    def feature_extractor(self, data_sensory, process_type, process_id, compromised_feature_extractor=False):
         """simulation of feature extraction component
 
         Args:
@@ -249,7 +253,7 @@ class Node:
         """
         # provisional feature extraction
         features = None
-        if compromised:
+        if compromised_feature_extractor:
             features = "This is a representation of artificial features, set by the attacker who compromised one node!"
         else:
             features = self.extract(data_sensory)
@@ -305,21 +309,26 @@ class Node:
             transaction (Transaction): verifies the operation outcome of given transaction
 
         Returns:
-            Bool: True if the operation outcome is validated, else False
+            Str or None: None result if the operation outcome is validated, else the other result
         """
         self.add_transaction(transaction)
         data = transaction.get_data()
         if self.always_false:
-            return False
+            return "Proposing other artificial features to show node malfunction!"
+        # if always true return the proposed result instantly
         if self.always_true:
-            return True
+            return None
         if data["operation"] == "Feature Extraction":
             features = self.extract(biometrics["sensor_data"])
+            print(features)
+
+            print(biometrics)
             print(Fore.CYAN + f'- NODE{self.id}\t\t\t executing feature extraction')
             if self.compare_features(features, biometrics["features"]):
-                return True
+                print("yes vraciam none")
+                return None
             else:
-                return False
+                return features
         if data["operation"] == "Matching":
             print(Fore.CYAN + f'- NODE{self.id}\t\t\t executing matching ' + data["process_type"])
             # firstly check if the proposed user is in database
@@ -328,17 +337,17 @@ class Node:
                 if result:
                     # check if the users found are the same as proposed
                     if result == data["user"]:
-                        return True
+                        return None
                 else:
-                    return False
+                    return result
             if Biometric_Processes(data["process_type"]) == Biometric_Processes.IDENTIFICATION.value:
                 result = self.features_in_database(biometrics["features"])
                 if result:
                     # check if found user for given features is the same as proposed one
                     if result == data["user"]:
-                        return True
+                        return None
                 else:
-                    return False
+                    return result
 
     def verify_block(self, block):
         """
@@ -351,11 +360,14 @@ class Node:
             Bool: is the block valid or not
         """
         if self.always_false:
-            return False
+            return "Proposing other artificial block to show node malfunction!"
         if self.always_true:
-            return True
+            return None
         print(Fore.CYAN + f'- NODE{self.id}\t\t\t is validating the proposed block!')
-        return block.verify_block()
+        if block.verify_block():
+            return None
+        else:
+            return "Verification failed"
 
     def add_block_to_blockchain(self, block):
         """
@@ -387,7 +399,7 @@ class Node:
             exit(1)
         return log
     
-    async def received_reply(self, msg_hash, decision):
+    async def received_reply(self, msg_hash, result):
         """update the count of received replies
 
         Args:
@@ -397,10 +409,11 @@ class Node:
             MessageLog: log of message that received prepare message
         """
         log = self.search_log_msghash(msg_hash)
-        if decision:
-            log.reply_count_agree += 1   
+        if result:
+            log.reply_count_disagree += 1   
+            log.disagreement_solution = result
         else:
-            log.reply_count_disagree += 1
+            log.reply_count_agree += 1
         if log.reply_count_agree >= config.MIN_REPLY:
             log.reply_flag = True
         if log.reply_count_disagree >= config.MIN_REPLY:
@@ -467,8 +480,15 @@ class Node:
                         else:
                             print(Fore.GREEN + "- Features have been validated and prepared for transmission to matcher!"+ Style.RESET_ALL)
                     else:
-                        print(Fore.YELLOW + "- Proposed matching result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
-                        data["success"] = False
+                        if Biometric_Processes(data["process_type"]) == Biometric_Processes.ENROLLMENT.value:
+                            print(Fore.YELLOW + "- Proposed feature extraction result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
+
+                            print(Fore.GREEN + "- Storing features into database!"+ Style.RESET_ALL)
+                            self.store_features(log.disagreement_solution, data["user"])
+                            data["success"] = True
+                        else:
+                            print(Fore.YELLOW + "- Proposed feature extraction result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
+                            data["success"] = False
                         consensus_object.update_transaction(data, self.wallet)
                 else:
                     print(Back.RED + Fore.WHITE + "- Feature extraction result has not been validated, failed " + data["process_type"] + "!" + Style.RESET_ALL)
@@ -481,3 +501,12 @@ class Node:
             print(Back.GREEN + Fore.WHITE + "- Block has been validated, succesfull block proposal!" + Style.RESET_ALL)
             self.add_block_to_blockchain(consensus_object)
     
+if __name__ == "__main__":
+    jou = Node(1, None, None, None)
+    biometrics = jou.get_sensor_data("lmao")
+    print(biometrics)
+    print(jou.get_sensor_data("lmao"))
+    print("hahaha")
+    extracted = jou.extract(biometrics)
+    print(extracted)
+    print(jou.extract(jou.get_sensor_data("lmao")))

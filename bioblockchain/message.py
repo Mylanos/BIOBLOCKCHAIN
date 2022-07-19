@@ -2,7 +2,7 @@ from enum import Enum
 import json
 from bioblockchain.transaction import Transaction
 from bioblockchain.block import Block
-from bioblockchain.utils import ChainUtils
+from bioblockchain.chain_utils import ChainUtils
 from ecdsa.keys import BadSignatureError, BadDigestError
 
 class PBFT_Message(str, Enum):
@@ -28,7 +28,7 @@ class Message:
         self.content = content
         self.timestamp = "12.07.1999"
         self.hash = ChainUtils.hash(self.toJSON()).digest()
-        self.signature = sender.wallet.sign_digest(self.hash)
+        self.signature = sender.wallet.sign(self.hash)
 
     def toJSON(self):
         """custom object to json conversion
@@ -82,6 +82,7 @@ class MessageLogged:
         self.commit_flag = False
         self.reply_flag = False
         self.disagreement = False
+        self.disagreement_solution = None
         self.reply_operation_executed = False
         self.commit_sent = False
         self.reply_sent = False

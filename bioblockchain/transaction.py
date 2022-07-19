@@ -1,5 +1,6 @@
 from unicodedata import name
-from bioblockchain.utils import TimeUtils, ChainUtils
+from bioblockchain.chain_utils import ChainUtils
+from bioblockchain.time_utils import TimeUtils
 from datetime import datetime
 from json import dumps
 
@@ -22,7 +23,7 @@ class Transaction:
         # hash of the data
         self.hash = ChainUtils.hash(dumps(self.payload))
         # signature of the data
-        self.signature = wallet.sign_data(self.payload)
+        self.signature = wallet.sign(self.payload)
 
     def verify_transaction(self): 
         """verify_transaction verifies wether the transaction is valid
@@ -62,7 +63,7 @@ class Transaction:
     From: {ChainUtils.string_from_verifkey(self.sender)}
     Payload: {dumps(self.payload, sort_keys=True, indent=4)}
     Timestamp: {self.timestamp}
-    Hash: {self.hash}
+    Hash: {self.hash.hexdigest()}
     Signature: {self.signature.hex()}""")
 
     def get_data(self):
@@ -78,4 +79,4 @@ class Transaction:
         self.payload["data"] = data
         self.hash = ChainUtils.hash(dumps(self.payload))
         # signature of the data
-        self.signature = node.sign_data(self.payload)
+        self.signature = node.sign(self.payload)
