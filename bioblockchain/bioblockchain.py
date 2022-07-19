@@ -22,7 +22,7 @@ class BioBlockchain():
         #TODOOO rethink how are you going to store data in database
         self.users = []
         for num in range(config.NUM_NODES):
-            self.nodes.append(Node(num, self.template_storage, self.users, self.blockchain))
+            self.nodes.append(Node(num, self.template_storage, self.users, self.blockchain, 1 / config.NUM_PARTICIPATING_NODES))
         self.pbft = PBFT(self.nodes, verbosity)
         self.node = self.get_random_node()
 

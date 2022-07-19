@@ -244,7 +244,7 @@ class PBFT:
             # received prepares counting
             log = await recipient.received_prepare(msg_hash)
             if self.verbose:
-                print(f'- NODE{recipient.id} (PREPARES:{log.prepare_count - 1}->{log.prepare_count})\t received message({json.dumps(message.ttype)})')
+                print(f'- NODE{recipient.id} (PREPARES:{round(log.prepare_count - recipient.weight, 2)}->{round(log.prepare_count, 2)})\t received message({json.dumps(message.ttype)})')
             seq = message.content["seq"]
             view = message.content["view"]
             if log.prepare_flag and not log.commit_sent:
@@ -258,7 +258,7 @@ class PBFT:
             # received commits counting
             log = await recipient.received_commit(msg_hash)
             if self.verbose:
-                print(Fore.CYAN + f'- NODE{recipient.id} (COMMITS:{log.commit_count - 1}->{log.commit_count})\t received message({json.dumps(message.ttype)})')
+                print(Fore.CYAN + f'- NODE{recipient.id} (COMMITS:{round(log.commit_count - recipient.weight,2)}->{round(log.commit_count, 2)})\t received message({json.dumps(message.ttype)})')
             # if there was enough commit messages, another round is ready to go underway
             if log.commit_flag and not log.reply_sent:
                 result = None
@@ -270,9 +270,16 @@ class PBFT:
                     result = recipient.verify_decision(log.message.content["consensus_object"], log.message.content["biometrics"])
            
                 if result:
-                    print(Fore.RED + f"- NODE{recipient.id} (COMMITS:{log.commit_count})\t failed validation!, sending \"REPLY\" message!" + Fore.CYAN)
+                    if self.verbose:
+                        print(Fore.RED + f"- NODE{recipient.id} (COMMITS:{round(log.commit_count,2)})\t failed validation!, sending \"REPLY\" message!" + Fore.CYAN)
+                    else:
+                        print(Fore.RED + f"- NODE{recipient.id} \t\t failed validation!, sending \"REPLY\" message!" + Fore.CYAN)                       
                 else:
-                    print(Fore.GREEN + f"- NODE{recipient.id} (COMMITS:{log.commit_count})\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
+                    if self.verbose:
+                        print(Fore.GREEN + f"- NODE{recipient.id} (COMMITS:{round(log.commit_count,2)})\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
+                    else:
+                        print(Fore.GREEN + f"- NODE{recipient.id} \t\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
+                       
 
                 log.reply_sent = True
                 content = message.content["msg_hash"],result
@@ -284,7 +291,7 @@ class PBFT:
             # received replies counting
             log = await recipient.received_reply(msg_hash,result)
             if self.verbose:
-                print(f'- NODE{recipient.id} (REPLIES:{log.reply_count_agree - 1}->{log.reply_count_agree})\t received message({json.dumps(message.ttype)})')
+                 print(f'- NODE{recipient.id} (REPLIES:{round(log.reply_count_agree - recipient.weight, 2)}->{round(log.reply_count_agree,2)})\t received message({json.dumps(message.ttype)})')
             if log.reply_flag and not log.reply_operation_executed:
                 print(Fore.GREEN + "- Enough replies have been received!" + Style.RESET_ALL)
                 recipient.execute_operation(log)

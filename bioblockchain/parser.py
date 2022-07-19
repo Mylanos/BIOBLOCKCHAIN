@@ -8,7 +8,7 @@ class MyParser:
         parser = argparse.ArgumentParser()
         group = parser.add_mutually_exclusive_group()
         parser.add_argument('-v', '--verbose', action='store_true', default=False, help='shows the detailed information about communication.')
-        group.add_argument('-uiv', '--unknown_individual_verification', action='store_true', default=False, help='scenario when unknown indivi tries to verify himself.')
+        group.add_argument('-uiv', '--unknown_individual_verification', action='store_true', default=False, help='scenario when unknown individual tries to verify himself.')
         group.add_argument('-uii', '--unknown_individual_identification', action='store_true', default=False, help='scenario when unknown individual tries to get identified.')
         group.add_argument('-fem', '--feature_extraction_malfunctioned', action='store_true', default=False, help='scenario when feature extraction fails/gets compromised.')
         group.add_argument('-nmat', '--node_malfunction_always_true', action='store_true', default=False, help='scenario when one of the nodes always returns true.')

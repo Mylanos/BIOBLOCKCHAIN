@@ -71,10 +71,10 @@ class Message:
 class MessageLogged:
     """Single log stored in a node for given message
     """
-    def __init__(self, message):
+    def __init__(self, message, weight):
         self.msg_hash = ChainUtils.hash(message.toJSON()).digest()
         self.message = message
-        self.prepare_count = 0
+        self.prepare_count = weight
         self.commit_count = 0
         self.reply_count_agree = 0
         self.reply_count_disagree = 0

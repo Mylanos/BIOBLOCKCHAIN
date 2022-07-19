@@ -30,7 +30,7 @@ class Biometric_Processes(str, Enum):
 class Node:
     """single node participating in the peer-2-peer network
     """
-    def __init__(self, node_num, storage, users, blockchain):
+    def __init__(self, node_num, storage, users, blockchain, weight):
         # reference to storage
         self.template_storage = storage
         # nodes ID
@@ -52,6 +52,8 @@ class Node:
         # malfunctionous node always returns YES/NO
         self.always_true = False
         self.always_false = False
+        # weight of the node
+        self.weight = weight
 
     def matcher(self, features, mode, claimed_identity, process_id):
         data = {}
@@ -137,7 +139,7 @@ class Node:
         log = self.search_log_msghash(message.hash)
         # redundant request message
         if not log:
-            self.request_log.append(MessageLogged(message=message))
+            self.request_log.append(MessageLogged(message=message, weight=self.weight))
         else:
             #TODO change this hard exit when repetitive log was found
             print(f"Request from the same message was already in the Node{self.id}'s log!")
@@ -309,7 +311,7 @@ class Node:
             transaction (Transaction): verifies the operation outcome of given transaction
 
         Returns:
-            Str or None: None result if the operation outcome is validated, else the other result
+            Str or None: If the result of the operation is validated returns None, otherwise returns the different found result
         """
         self.add_transaction(transaction)
         data = transaction.get_data()
@@ -320,12 +322,8 @@ class Node:
             return None
         if data["operation"] == "Feature Extraction":
             features = self.extract(biometrics["sensor_data"])
-            print(features)
-
-            print(biometrics)
             print(Fore.CYAN + f'- NODE{self.id}\t\t\t executing feature extraction')
             if self.compare_features(features, biometrics["features"]):
-                print("yes vraciam none")
                 return None
             else:
                 return features
@@ -339,7 +337,7 @@ class Node:
                     if result == data["user"]:
                         return None
                 else:
-                    return result
+                    return "Didnt find the claimant in the database"
             if Biometric_Processes(data["process_type"]) == Biometric_Processes.IDENTIFICATION.value:
                 result = self.features_in_database(biometrics["features"])
                 if result:
@@ -347,7 +345,7 @@ class Node:
                     if result == data["user"]:
                         return None
                 else:
-                    return result
+                    return "Didnt find the individual in the database"
 
     def verify_block(self, block):
         """
@@ -363,7 +361,7 @@ class Node:
             return "Proposing other artificial block to show node malfunction!"
         if self.always_true:
             return None
-        print(Fore.CYAN + f'- NODE{self.id}\t\t\t is validating the proposed block!')
+        print(Fore.CYAN + f'- NODE{self.id}\t\t\t validates the proposed block!')
         if block.verify_block():
             return None
         else:
@@ -391,8 +389,8 @@ class Node:
         """
         log = self.search_log_msghash(msg_hash)
         if log:
-            log.prepare_count += 1   
-            if log.prepare_count >= config.MIN_PREPARE:
+            log.prepare_count += self.weight 
+            if log.prepare_count >= config.MIN_WEIGHT_PREPARE:
                 log.prepare_flag = True
         else:
             print("DIDNT FIND A MESSAGE WITH HASH " + msg_hash)
@@ -410,13 +408,13 @@ class Node:
         """
         log = self.search_log_msghash(msg_hash)
         if result:
-            log.reply_count_disagree += 1   
+            log.reply_count_disagree += self.weight  
             log.disagreement_solution = result
         else:
-            log.reply_count_agree += 1
-        if log.reply_count_agree >= config.MIN_REPLY:
+            log.reply_count_agree += self.weight
+        if log.reply_count_agree >= config.MIN_WEIGHT_REPLY:
             log.reply_flag = True
-        if log.reply_count_disagree >= config.MIN_REPLY:
+        if log.reply_count_disagree >= config.MIN_WEIGHT_REPLY:
             log.reply_flag = True 
             log.disagreement = True
         return log
@@ -431,8 +429,8 @@ class Node:
             MessageLog: log of message that received prepare message
         """
         log = self.search_log_msghash(msg_hash)
-        log.commit_count += 1   
-        if log.commit_count >= config.MIN_COMMIT:
+        log.commit_count += self.weight  
+        if log.commit_count >= config.MIN_WEIGHT_COMMIT:
             log.commit_flag = True
         return log
 
@@ -481,13 +479,13 @@ class Node:
                             print(Fore.GREEN + "- Features have been validated and prepared for transmission to matcher!"+ Style.RESET_ALL)
                     else:
                         if Biometric_Processes(data["process_type"]) == Biometric_Processes.ENROLLMENT.value:
-                            print(Fore.YELLOW + "- Proposed feature extraction result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
+                            print(Back.YELLOW + Fore.WHITE  + "- Proposed feature extraction result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
 
-                            print(Fore.GREEN + "- Storing features into database!"+ Style.RESET_ALL)
+                            print(Fore.YELLOW + "- Storing features into database!"+ Style.RESET_ALL)
                             self.store_features(log.disagreement_solution, data["user"])
                             data["success"] = True
                         else:
-                            print(Fore.YELLOW + "- Proposed feature extraction result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
+                            print(Back.YELLOW + Fore.WHITE + "- Proposed feature extraction result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
                             data["success"] = False
                         consensus_object.update_transaction(data, self.wallet)
                 else:
@@ -502,7 +500,7 @@ class Node:
             self.add_block_to_blockchain(consensus_object)
     
 if __name__ == "__main__":
-    jou = Node(1, None, None, None)
+    jou = Node(1, None, None, None, 1 / config.NUM_PARTICIPATING_NODES)
     biometrics = jou.get_sensor_data("lmao")
     print(biometrics)
     print(jou.get_sensor_data("lmao"))
