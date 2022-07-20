@@ -75,7 +75,9 @@ class BioBlockchain():
         blockchain_data = self.blockchain.search_by_process(new_process_id)
         if blockchain_data["success"]:
             matcher_data = self.node.matcher(biometric_data["features"], Biometric_Processes(process), claimed_identity, new_process_id)
-            await self.pbft.validate_decision(matcher_data, biometric_data, self.node)
+            template = {}
+            template["features"] = biometric_data["features"]
+            await self.pbft.validate_decision(matcher_data, template, self.node)
         else:
             print(Fore.RED + "System haven't reached consensus on the authorization request!"+ Style.RESET_ALL)
         print(Back.YELLOW + Fore.WHITE + f"***\tEND OF {process.upper()}\t\t\t***" + Style.RESET_ALL)

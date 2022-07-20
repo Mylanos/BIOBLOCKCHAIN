@@ -315,20 +315,27 @@ class Node:
         """
         self.add_transaction(transaction)
         data = transaction.get_data()
-        if self.always_false:
-            return "Proposing other artificial features to show node malfunction!"
-        # if always true return the proposed result instantly
-        if self.always_true:
-            return None
+        
         if data["operation"] == "Feature Extraction":
             features = self.extract(biometrics["sensor_data"])
             print(Fore.CYAN + f'- NODE{self.id}\t\t\t executing feature extraction')
+            if self.always_false:
+                return "Proposing other artificial features to show node malfunction!"
+            # if always true return the proposed result instantly
+            if self.always_true:
+                return None
             if self.compare_features(features, biometrics["features"]):
                 return None
             else:
                 return features
         if data["operation"] == "Matching":
             print(Fore.CYAN + f'- NODE{self.id}\t\t\t executing matching ' + data["process_type"])
+            if self.always_false:
+                return "Proposing other artificial features to show node malfunction!"
+            # if always true return the proposed result instantly
+            if self.always_true:
+                return None
+            
             # firstly check if the proposed user is in database
             if Biometric_Processes(data["process_type"]) == Biometric_Processes.VERIFICATION.value:
                 result = self.claimed_identity_in_database(biometrics["features"], data["claimed_identity"])
@@ -357,11 +364,11 @@ class Node:
         Returns:
             Bool: is the block valid or not
         """
+        print(Fore.CYAN + f'- NODE{self.id}\t\t\t validates the proposed block!')
         if self.always_false:
             return "Proposing other artificial block to show node malfunction!"
         if self.always_true:
             return None
-        print(Fore.CYAN + f'- NODE{self.id}\t\t\t validates the proposed block!')
         if block.verify_block():
             return None
         else:
