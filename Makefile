@@ -7,15 +7,11 @@ all: run
 
 #TODO help description
 help:
-	$(PYTHON) $(MAIN) -h
+	$(PYTHON) -m $(MAIN) -h
 
 #run script
 run:
 	$(PYTHON) -m $(MAIN)
-
-#run script verbosely
-run_verbose:
-	$(PYTHON) -m $(MAIN) -v
 
 # tests
 tests:
