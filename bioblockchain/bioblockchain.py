@@ -42,7 +42,7 @@ class BioBlockchain():
         print("- Sensor scanning raw biometrics...")
         # sensor collects and stores received data
         data_sensory = self.node.get_sensor_data(
-            f"Naive way of acquiring raw data from sensor for simulating successfull sensor operation!")
+            f"Naive way of acquiring known raw biometric data from sensor!")
         print("- Feature extractor processing raw data...")
         # feature extraction of collected data on approached terminal
         biometric_data, feature_extraction_data = self.node.feature_extractor(

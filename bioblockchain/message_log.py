@@ -1,9 +1,11 @@
 
 from bioblockchain.chain_utils import ChainUtils
 
+
 class MessageLogged:
     """Single log stored in a node for given message
     """
+
     def __init__(self, message, weight):
         self.msg_hash = ChainUtils.hash(message.toJSON()).digest()
         self.message = message
@@ -32,7 +34,7 @@ class MessageLogged:
         """
         self.view_num = view_num
         self.seq_num = seq_num
-    
+
     def __str__(self) -> str:
         return (f"""
 - MessageLog

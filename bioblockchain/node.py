@@ -351,7 +351,7 @@ class Node:
         """
         self.add_transaction(transaction)
         data = transaction.get_data()
-
+        
         if data["operation"] == "Feature Extraction":
             features = self.extract(biometrics["sensor_data"])
             print(Fore.CYAN +
