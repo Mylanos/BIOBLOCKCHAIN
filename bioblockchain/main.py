@@ -1,9 +1,8 @@
-from ast import Pass
-import bioblockchain
+#!/usr/bin/env python
 from bioblockchain.bioblockchain import BioBlockchain
 import asyncio
 from bioblockchain.parser import MyParser
-from bioblockchain.wallet import Wallet
+
 
 def query_yes_no(question, default="yes"):
     """
@@ -27,6 +26,7 @@ def query_yes_no(question, default="yes"):
         else:
             print("Please enter 'yes' or 'no' answear! (or 'y' or 'n').\n")
 
+
 def run():
     """
     run is a main script running the bioblockchain demonstrator
@@ -37,18 +37,23 @@ def run():
     # in this scenario unknown user tries to verify himself with his own biometrics as someone who is known for the system
     if parser.unknown_individual_verification:
         asyncio.run(bio_blockchain.run_enrollment())
-        asyncio.run(bio_blockchain.run_authentication("verification", correct_biometrics=False))
+        print("")
+        asyncio.run(bio_blockchain.run_authentication(
+            "verification", unknown_biometrics=False, compromised_matcher=True))
     # in this scenario known user tries to verify himself as someone else
     elif parser.unknown_individual_identification:
         asyncio.run(bio_blockchain.run_enrollment())
         print("")
-        asyncio.run(bio_blockchain.run_authentication("identification", correct_biometrics=False))
+        asyncio.run(bio_blockchain.run_authentication(
+            "identification", unknown_biometrics=False, compromised_matcher=True))
     elif parser.feature_extraction_malfunctioned:
-        asyncio.run(bio_blockchain.run_enrollment(compromised_feature_extractor=True))
+        asyncio.run(bio_blockchain.run_enrollment(
+            compromised_feature_extractor=True))
     elif parser.node_malfunction_always_true:
         node = bio_blockchain.get_random_node()
         node.always_true = True
-        asyncio.run(bio_blockchain.run_enrollment(compromised_feature_extractor=True))
+        asyncio.run(bio_blockchain.run_enrollment(
+            compromised_feature_extractor=True))
     elif parser.node_malfunction_always_false:
         node = bio_blockchain.get_random_node()
         node.always_false = True

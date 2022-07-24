@@ -4,6 +4,7 @@ from ecdsa import NIST256p, SigningKey
 from ecdsa.util import randrange_from_seed__trytryagain
 from pickle import dumps
 
+
 class ChainUtils:
     """
     ChainUtils contains static methods for cryptographic operations and operations with blockchain
@@ -12,7 +13,7 @@ class ChainUtils:
         ValueError: Raised when passed arguments to verify_signature are of wrong type 
         BadSignatureError: Raised in verify_signature when the signature is wrong
     """
-    
+
     @staticmethod
     def transactionlist_to_json(tx_list):
         """
@@ -84,7 +85,7 @@ class ChainUtils:
             Bool: True when the signature is valid, False otherwise
         """
 
-        if not (isinstance(data, str) or  isinstance(data, dict)):
+        if not (isinstance(data, str) or isinstance(data, dict)):
             raise ValueError('Need a dict or string, got {0!r}'.format(data))
         try:
             data_bytes = dumps(data)

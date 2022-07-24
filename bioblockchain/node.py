@@ -1,20 +1,16 @@
-from cmd import IDENTCHARS
+
 from enum import Enum
-from hashlib import blake2b, md5
+from hashlib import md5
 import bioblockchain.config as config
-import random, string
-from bioblockchain.message import MessageLogged
+import random
+import string
+from bioblockchain.message_log import MessageLogged
 from bioblockchain.chain_utils import ChainUtils
 from bioblockchain.wallet import Wallet
-from json import dumps
 from colorama import Back, Fore, Style
-
 from bioblockchain.transaction import Transaction
 from bioblockchain.block import Block
 
-# TODO pri faily/ovladnuti feature extractoru sa stale ukladaju featury ktore odoslal ten zly node
-# TODO sprav nejak ukladanie odpoved z nodu ak sa featury nezhoduju a pri dostatočnom počte hlasov pre
-# TODO dane featury ulož do databaze
 
 class Biometric_Processes(str, Enum):
     """processes in biometric systems
@@ -27,9 +23,11 @@ class Biometric_Processes(str, Enum):
     VERIFICATION = "verification"
     IDENTIFICATION = "identification"
 
+
 class Node:
     """single node participating in the peer-2-peer network
     """
+
     def __init__(self, node_num, storage, users, blockchain, weight):
         # reference to storage
         self.template_storage = storage
@@ -47,7 +45,6 @@ class Node:
         self.users = users
         # sequence number of received requests
         self.request_sequence_num = 0
-        #TODO figure out how the views are represented
         self.current_view = 0
         # malfunctionous node always returns YES/NO
         self.always_true = False
@@ -55,7 +52,20 @@ class Node:
         # weight of the node
         self.weight = weight
 
-    def matcher(self, features, mode, claimed_identity, process_id):
+    def matcher(self, features, mode, claimed_identity, process_id, compromised):
+        """
+        matcher operates as the matcher component that is proposing the operation to the network
+
+        Args:
+            features (Str):  representation of extracted features
+            mode (Str): mode of operation(either identification or verification)
+            claimed_identity (Str): identifier of the claimed identity
+            process_id (Str): process identifier for given operation
+            compromised (Bool): flag used for compromised node simulation (proposing wrong match result)
+
+        Returns:
+            Dict: dictionary containing all the operational data and outcome of matching
+        """
         data = {}
         data["operation"] = "Matching"
         data["process_id"] = process_id
@@ -66,7 +76,11 @@ class Node:
             data["process_type"] = "identification"
             data["match_timestamp"] = "12.07.1999"
 
-            if result:      
+            if compromised:
+                data["user"] = claimed_identity
+                data["score"] = 87
+                data["success"] = True
+            elif result:
                 data["user"] = result
                 data["score"] = 87
                 data["success"] = True
@@ -76,11 +90,17 @@ class Node:
                 data["score"] = 23
         if mode == Biometric_Processes.VERIFICATION:
             # search is made by 1:1 comparison, in real world scenario templates/biometrics wouldnt be perfectly same
-            result = self.claimed_identity_in_database(features, claimed_identity)
+            result = self.claimed_identity_in_database(
+                features, claimed_identity)
             data["process_type"] = "verification"
             data["claimed_identity"] = claimed_identity
             data["match_timestamp"] = "12.07.1999"
-            if result:      
+
+            if compromised:
+                data["user"] = claimed_identity
+                data["score"] = 87
+                data["success"] = True
+            elif result:
                 data["user"] = result
                 # maybe do custom scores
                 data["score"] = 87
@@ -89,7 +109,7 @@ class Node:
                 data["user"] = None
                 data["success"] = False
                 data["score"] = 23
-        
+
         return data
 
     def features_in_database(self, features):
@@ -102,22 +122,22 @@ class Node:
         Returns:
             str: found key/identifier for given features/user or None
         """
-        
+
         for key, feature in self.template_storage.items():
             if features == feature:
                 return key
         return None
-    
+
     def claimed_identity_in_database(self, features, claimed_identity):
         """
         claimed_identity_in_database method validates if given feature is stored in the template database in form of claimed identity(1:1 search)
 
         Args:
-            features (str): string representation of acquired features
+            features (Str): string representation of acquired features
             claimed_identity (str): string representation of the claimed identity
 
         Returns:
-            str: string representation of found user's key/identifier or None
+            Str: string representation of found user's key/identifier or None
         """
         # search for claimed user in DB
         search_result = self.search_user_in_database(claimed_identity)
@@ -139,26 +159,43 @@ class Node:
         log = self.search_log_msghash(message.hash)
         # redundant request message
         if not log:
-            self.request_log.append(MessageLogged(message=message, weight=self.weight))
+            self.request_log.append(MessageLogged(
+                message=message, weight=self.weight))
         else:
-            #TODO change this hard exit when repetitive log was found
-            print(f"Request from the same message was already in the Node{self.id}'s log!")
+            print(
+                f"Request from the same message was already in the Node{self.id}'s log!")
             exit(1)
         return self.request_log[-1].msg_hash
 
     def corresponding_view_seq(self, view, seq):
-        # TODO somehow check for the valid sequence number, needed for the view changes connected with the primary suspicion
+        """
+        corresponding_view_seq check for valid sequence and view number
+
+        Args:
+            view (int): current view number of pbft
+            seq (int): current sequence number of pbft
+
+        Returns:
+            Bool: true
+        """
         return True
 
     def set_seq_number(self, message_hash):
+        """
+        set_seq_number assign next available sequence number to the request
+
+        Args:
+            message_hash (str): hash of the request message
+
+        Returns:
+            Tuple: sequence and view number that was assigned to the request
+        """
         # assigning next available sequence number
-        #TODO handling of repetitive sets of numbers or numbers out of valid range
         log = self.search_log_msghash(message_hash)
         if log:
             log.update_nums(self.current_view, self.request_sequence_num)
             self.request_sequence_num += 1
         else:
-            #TODO change this hard exit
             print("Requested to set view and sequence number for brand new message!")
             exit(1)
         return self.current_view, self.request_sequence_num - 1
@@ -177,7 +214,6 @@ class Node:
                 return entry
         return None
 
-
     def search_log_msghash(self, message_hash):
         """search message in log of request messages 
 
@@ -185,28 +221,27 @@ class Node:
             message_hash (bytes): hash representation of searched message
 
         Returns:
-            Message object: Succesful search of message
-            None: Failed search
+            Message object: message on succesful search of message, else None
         """
         for entry in self.request_log:
             if entry.msg_hash == message_hash:
                 return entry
         return None
-    
+
     def search_user_in_database(self, user):
         """searches for identifier of user in database
 
         Args:
-            user (str): representation of users identification in database
+            user (Str): representation of users identification in database
 
         Returns:
-            str: return found user or None
+            Str: return found user or None
         """
         for key in self.template_storage.keys():
             if key == user:
                 return key
         return None
-    
+
     def store_features(self, features, new_user):
         """store features in template storage
 
@@ -220,7 +255,7 @@ class Node:
         """naive way of acquiring sensor biometric data
 
         Returns:
-            Str: string representation of acquired biometric data
+            Str:  representation of acquired biometric data
         """
         # return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
         h = md5(bytes(string, encoding='utf8'))
@@ -263,9 +298,12 @@ class Node:
         biometric_data = {}
         if process_type == Biometric_Processes.ENROLLMENT:
             if self.features_in_database(features):
-                raise Exception("Features were already enrolled: Operation forbidden!")
-            new_user = Wallet(''.join(random.choices(string.ascii_letters + string.digits, k=10)))
-            transaction_data["user"] = ChainUtils.string_from_verifkey(new_user.verif_key)
+                raise Exception(
+                    "Features were already enrolled: Operation forbidden!")
+            new_user = Wallet(''.join(random.choices(
+                string.ascii_letters + string.digits, k=10)))
+            transaction_data["user"] = ChainUtils.string_from_verifkey(
+                new_user.verif_key)
             transaction_data["process_type"] = "enrollment"
 
         elif process_type == Biometric_Processes.VERIFICATION:
@@ -291,8 +329,8 @@ class Node:
         self.transaction_pool.append(transaction)
 
     def compare_features(self, features1, features2):
-        """naive comparison of features(hard return True)
-        
+        """naive comparison of features
+
         Args:
             features1 (str): first features 
             features2 (str): second features
@@ -300,8 +338,6 @@ class Node:
         Returns:
             Bool: True if they are similar
         """
-        #TODO features are generated randomly, cant compare them expressively
-        #TODO certain biometric systems are returning a score of similarity
         return features1 == features2
 
     def verify_decision(self, transaction, biometrics):
@@ -315,10 +351,11 @@ class Node:
         """
         self.add_transaction(transaction)
         data = transaction.get_data()
-        
+
         if data["operation"] == "Feature Extraction":
             features = self.extract(biometrics["sensor_data"])
-            print(Fore.CYAN + f'- NODE{self.id}\t\t\t executing feature extraction')
+            print(Fore.CYAN +
+                  f'- NODE{self.id}\t\t\t executing feature extraction')
             if self.always_false:
                 return "Proposing other artificial features to show node malfunction!"
             # if always true return the proposed result instantly
@@ -329,16 +366,18 @@ class Node:
             else:
                 return features
         if data["operation"] == "Matching":
-            print(Fore.CYAN + f'- NODE{self.id}\t\t\t executing matching ' + data["process_type"])
+            print(
+                Fore.CYAN + f'- NODE{self.id}\t\t\t executing matching ' + data["process_type"])
             if self.always_false:
                 return "Proposing other artificial features to show node malfunction!"
             # if always true return the proposed result instantly
             if self.always_true:
                 return None
-            
+
             # firstly check if the proposed user is in database
             if Biometric_Processes(data["process_type"]) == Biometric_Processes.VERIFICATION.value:
-                result = self.claimed_identity_in_database(biometrics["features"], data["claimed_identity"])
+                result = self.claimed_identity_in_database(
+                    biometrics["features"], data["claimed_identity"])
                 if result:
                     # check if the users found are the same as proposed
                     if result == data["user"]:
@@ -364,7 +403,8 @@ class Node:
         Returns:
             Bool: is the block valid or not
         """
-        print(Fore.CYAN + f'- NODE{self.id}\t\t\t validates the proposed block!')
+        print(Fore.CYAN +
+              f'- NODE{self.id}\t\t\t validates the proposed block!')
         if self.always_false:
             return "Proposing other artificial block to show node malfunction!"
         if self.always_true:
@@ -382,9 +422,7 @@ class Node:
             block (Block): block to be added to blockchain
         """
         self.blockchain.add_block(block)
-            
 
-    # TODO watchout for unsuccesful search, might cause errors 
     async def received_prepare(self, msg_hash):
         """update the count of received prepares
 
@@ -396,14 +434,14 @@ class Node:
         """
         log = self.search_log_msghash(msg_hash)
         if log:
-            log.prepare_count += self.weight 
+            log.prepare_count += self.weight
             if log.prepare_count >= config.MIN_WEIGHT_PREPARE:
                 log.prepare_flag = True
         else:
             print("DIDNT FIND A MESSAGE WITH HASH " + msg_hash)
             exit(1)
         return log
-    
+
     async def received_reply(self, msg_hash, result):
         """update the count of received replies
 
@@ -415,17 +453,17 @@ class Node:
         """
         log = self.search_log_msghash(msg_hash)
         if result:
-            log.reply_count_disagree += self.weight  
+            log.reply_count_disagree += self.weight
             log.disagreement_solution = result
         else:
             log.reply_count_agree += self.weight
         if log.reply_count_agree >= config.MIN_WEIGHT_REPLY:
             log.reply_flag = True
         if log.reply_count_disagree >= config.MIN_WEIGHT_REPLY:
-            log.reply_flag = True 
+            log.reply_flag = True
             log.disagreement = True
         return log
-    
+
     async def received_commit(self, msg_hash):
         """update the count of received commits
 
@@ -436,7 +474,7 @@ class Node:
             MessageLog: log of message that received prepare message
         """
         log = self.search_log_msghash(msg_hash)
-        log.commit_count += self.weight  
+        log.commit_count += self.weight
         if log.commit_count >= config.MIN_WEIGHT_COMMIT:
             log.commit_flag = True
         return log
@@ -457,7 +495,7 @@ class Node:
         else:
             return nodes
 
-    def create_block(self, transaction): 
+    def create_block(self, transaction):
         """
         create_block creation of a new block with given transaction proposed by this node
 
@@ -471,6 +509,12 @@ class Node:
         return block
 
     def execute_operation(self, log):
+        """
+        execute_operation after receiving enough replies the primary node performs this operation in this method according to the vote result
+
+        Args:
+            log (MessageLogged object): message log for given request for which the primary received enough replies
+        """
         consensus_object = log.message.content["consensus_object"]
         biometrics = log.message.content["biometrics"]
         if isinstance(consensus_object, Transaction):
@@ -478,40 +522,49 @@ class Node:
             if data["operation"] == "Feature Extraction":
                 if data["success"]:
                     if not log.disagreement:
-                        print(Back.GREEN + Fore.WHITE + "- Feature extraction result has been validated!" + Style.RESET_ALL)
+                        print(Back.GREEN + Fore.WHITE +
+                              "- Feature extraction result has been validated!" + Style.RESET_ALL)
                         if Biometric_Processes(data["process_type"]) == Biometric_Processes.ENROLLMENT.value:
-                            print(Fore.GREEN + "- Storing features into database!"+ Style.RESET_ALL)
-                            self.store_features(biometrics["features"], data["user"])
+                            print(
+                                Fore.LIGHTGREEN_EX + "- Storing features into database!" + Style.RESET_ALL)
+                            self.store_features(
+                                biometrics["features"], data["user"])
                         else:
-                            print(Fore.GREEN + "- Features have been validated and prepared for transmission to matcher!"+ Style.RESET_ALL)
+                            print(
+                                Fore.GREEN + "- Features have been validated and prepared for transmission to matcher!" + Style.RESET_ALL)
                     else:
                         if Biometric_Processes(data["process_type"]) == Biometric_Processes.ENROLLMENT.value:
-                            print(Back.YELLOW + Fore.WHITE  + "- Proposed feature extraction result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
+                            print(Back.YELLOW + Fore.WHITE + "- Proposed feature extraction result has been disagreed with, other outcome determined for " +
+                                  data["process_type"] + "!" + Style.RESET_ALL)
 
-                            print(Fore.YELLOW + "- Storing features into database!"+ Style.RESET_ALL)
-                            self.store_features(log.disagreement_solution, data["user"])
+                            print(
+                                Fore.YELLOW + "- Storing features into database!" + Style.RESET_ALL)
+                            self.store_features(
+                                log.disagreement_solution, data["user"])
                             data["success"] = True
                         else:
-                            print(Back.YELLOW + Fore.WHITE + "- Proposed feature extraction result has been disagreed with, other outcome determined for " + data["process_type"] + "!" + Style.RESET_ALL)
+                            print(Back.YELLOW + Fore.WHITE + "- Proposed feature extraction result has been disagreed with, other outcome determined for " +
+                                  data["process_type"] + "!" + Style.RESET_ALL)
                             data["success"] = False
                         consensus_object.update_transaction(data, self.wallet)
                 else:
-                    print(Back.RED + Fore.WHITE + "- Feature extraction result has not been validated, failed " + data["process_type"] + "!" + Style.RESET_ALL)
+                    print(Back.RED + Fore.WHITE + "- Feature extraction result has not been validated, failed " +
+                          data["process_type"] + "!" + Style.RESET_ALL)
             if data["operation"] == "Matching":
                 if data["success"]:
-                    print(Back.GREEN + Fore.WHITE + "- Matching result has been validated, succesfull " + data["process_type"] + "!" + Style.RESET_ALL)
+                    if not log.disagreement:
+                        print(Back.GREEN + Fore.WHITE + "- Matching result has been validated, succesfull " +
+                              data["process_type"] + "!" + Style.RESET_ALL)
+                    else:
+                        print(Back.YELLOW + Fore.WHITE + "- Proposed matching result has been disagreed with, other outcome determined for " +
+                              data["process_type"] + "!" + Style.RESET_ALL)
+                        data["success"] = True
+                        data["user"] = None
+                    consensus_object.update_transaction(data, self.wallet)
                 else:
-                    print(Back.RED + Fore.WHITE + "- Matching result has not been validated, failed " + data["process_type"] + "!" + Style.RESET_ALL)
+                    print(Back.RED + Fore.WHITE + "- Matching result has not been validated, failed " +
+                          data["process_type"] + "!" + Style.RESET_ALL)
         elif isinstance(consensus_object, Block):
-            print(Back.GREEN + Fore.WHITE + "- Block has been validated, succesfull block proposal!" + Style.RESET_ALL)
+            print(Back.GREEN + Fore.WHITE +
+                  "- Block has been validated, succesfull block proposal!" + Style.RESET_ALL)
             self.add_block_to_blockchain(consensus_object)
-    
-if __name__ == "__main__":
-    jou = Node(1, None, None, None, 1 / config.NUM_PARTICIPATING_NODES)
-    biometrics = jou.get_sensor_data("lmao")
-    print(biometrics)
-    print(jou.get_sensor_data("lmao"))
-    print("hahaha")
-    extracted = jou.extract(biometrics)
-    print(extracted)
-    print(jou.extract(jou.get_sensor_data("lmao")))

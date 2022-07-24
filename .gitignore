@@ -138,7 +138,7 @@ view.py
 *.DS_Store
 
 # vscode
-.vscode/
+*.vscode
 
 # sphinx build folder
 docs/_build

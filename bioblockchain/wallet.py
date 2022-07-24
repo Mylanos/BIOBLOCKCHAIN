@@ -1,17 +1,15 @@
-from dataclasses import dataclass
-from datetime import datetime
+
 from hashlib import sha256
-from os import truncate
-from ecdsa.ecdsa import Private_key
 from bioblockchain.chain_utils import ChainUtils
-from bioblockchain.time_utils import TimeUtils
 from bioblockchain.transaction import Transaction
 from pickle import dumps
+
 
 class Wallet:
     """ The wallet holds the public key and key pair. 
         It is also responsible for signing data hashes and creating signed transactions, messages...
     """
+
     def __init__(self, secret):
         self._private_key = ChainUtils.generate_key_from_seed(secret)
         self._verif_key = self.private_key.get_verifying_key()
@@ -38,10 +36,9 @@ class Wallet:
             data_bytes = dumps(data)
             return self.private_key.sign_deterministic(data_bytes, hashfunc=sha256)
         else:
-            raise ValueError(f'Signing function of Wallet class got unexpected data type({type(data)}).')
+            raise ValueError(
+                f'Signing function of Wallet class got unexpected data type({type(data)}).')
 
-
-    
     def create_transaction(self, data):
         """ creates transaction
 
@@ -55,16 +52,40 @@ class Wallet:
 
     @property
     def private_key(self):
+        """
+        private_key property contains private or SigningKey property
+
+        Returns:
+            SigningKey: private key of given wallet
+        """
         return self._private_key
 
     @private_key.setter
     def private_key(self, key):
+        """
+        private_key setter of property that contains private or SigningKey property
+
+        Args:
+            key (SigningKey object): assigned key 
+        """
         self._private_key = key
 
     @property
     def verif_key(self):
+        """
+        verif_key property contains public or VerifyingKey property
+
+        Returns:
+            VerifyingKey: public key of given wallet
+        """
         return self._verif_key
 
     @verif_key.setter
     def verif_key(self, key):
+        """
+        verif_key setter of property that contains private or VerifyingKey property
+
+        Args:
+            key (VerifyingKey object): assigned key 
+        """
         self._verif_key = key

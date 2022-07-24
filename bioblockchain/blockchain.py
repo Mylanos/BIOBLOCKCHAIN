@@ -1,14 +1,10 @@
-from re import S
 from bioblockchain.block import Block
-from bioblockchain.transaction import Transaction
-from bioblockchain.wallet import Wallet
 
-#TODO argparse
-#TODO implement search for the transactions for given wallet blockchain(MAYBE UNNECESARY)
 
 class Blockchain:
     """blockchain class containing list(chain) of blocks
     """
+
     def __init__(self):
         self.chain = [Block.genesis()]
 
@@ -53,11 +49,10 @@ class Blockchain:
         last_block = self.chain[-1]
         if((last_block.seq_number + 1) == block.seq_number and
                 last_block.hash_hexdigest == block.previous_hash_hexdigest):
-            #TODO not sure if its needed to verify the proposer with block method verify_proposer 
+            # TODO not sure if its needed to verify the proposer with block method verify_proposer
             if(block.hash_hexdigest == Block.block_hash(block).hexdigest() and block.verify_block()):
                 return True
         return False
-  
 
     def display_chain(self):
         """prints out the blockchain content
@@ -71,39 +66,22 @@ class Blockchain:
         last_block property containing last block in the blockchain
 
         Returns:
-            Block objectr: latest block object appended to the blockchain
+            Block object: latest block object appended to the blockchain
         """
         return self.chain[-1]
-    
+
     def search_by_process(self, process_id):
+        """
+        search_by_process looks for block containing transaction with given process_id
+
+        Args:
+            process_id (Str): string representation of the searched process_id
+
+        Returns:
+            Block: found Block or None
+        """
         for block in self.chain:
             result = block.search_by_process(process_id)
             if result:
                 return result
         return None
-
-
-if __name__ == "__main__":
-    blockchain = Blockchain()
-    stephan = Wallet("Stephan's Super Secret Phrase")
-    alice = Wallet("Alice's Super Secret Phrase")
-
-    tx1 = Transaction("Stephan just entered room E104", stephan)
-
-    data = {"id": 1234, "room-entered": "E104",
-            "verificated": True, "approved-by": "Stephan"}
-
-    tx2 = Transaction(data, alice)
-    signature = stephan.sign(data)
-    tx2.payload = {}
-    proposer1 = Wallet("validatooor2")
-    proposer2 = Wallet("validatooor1")
-
-    block1 = blockchain.create_block([tx1], proposer1)
-
-
-    block2 = blockchain.create_block([tx2], proposer2)
-    last_block = blockchain.last_block
-
-    print(block2.verify_proposer(proposer2))
-

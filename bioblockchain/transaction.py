@@ -1,7 +1,5 @@
-from unicodedata import name
 from bioblockchain.chain_utils import ChainUtils
 from bioblockchain.time_utils import TimeUtils
-from datetime import datetime
 from json import dumps
 
 
@@ -9,23 +7,24 @@ class Transaction:
     """
      Transaction class is holding certain data with accompanying info needed for it's verification
     """
+
     def __init__(self, data, wallet):
-        # id of the transaction for search 
+        # id of the transaction for search
         self.id = ChainUtils.id()
         # timestamp
         self.timestamp = TimeUtils.my_date()
-        # public key of the Transaction's sender 
+        # public key of the Transaction's sender
         self.sender = wallet.verif_key
         # data with unique id of this transaction and timestamp
-        self.payload = {"tx_id": self.id, 
-                        "data": data, 
+        self.payload = {"tx_id": self.id,
+                        "data": data,
                         "timestamp": self.timestamp}
         # hash of the data
         self.hash = ChainUtils.hash(dumps(self.payload))
         # signature of the data
         self.signature = wallet.sign(self.payload)
 
-    def verify_transaction(self): 
+    def verify_transaction(self):
         """verify_transaction verifies wether the transaction is valid
 
         Args:
@@ -55,7 +54,7 @@ class Transaction:
         content = {"id": self.id, "sender": ChainUtils.string_from_verifkey(self.sender), "payload": self.payload,
                    "hash": self.hash.hexdigest(), "signature": self.signature.hex()}
         return content
- 
+
     def __str__(self) -> str:
         return (f"""
     Transaction 

@@ -4,6 +4,7 @@ from ecdsa import NIST256p, SigningKey
 from ecdsa.util import randrange_from_seed__trytryagain
 from pickle import dumps
 
+
 class ChainUtils:
     """
     ChainUtils contains static methods for cryptographic operations and operations with blockchain
@@ -12,7 +13,7 @@ class ChainUtils:
         ValueError: Raised when passed arguments to verify_signature are of wrong type 
         BadSignatureError: Raised in verify_signature when the signature is wrong
     """
-    
+
     @staticmethod
     def transactionlist_to_json(tx_list):
         """
@@ -36,13 +37,13 @@ class ChainUtils:
         """generates UUID(universally unique identifier)
 
         Returns:
-            string]: generated UUID
+            String: generated UUID
         """
         return str(uuid1())
 
     @staticmethod
     def generate_key_from_seed(seed):
-        """generates private key from secret phrase
+        """generate_key_from_seed generates private key from secret phrase
 
         Args:
             seed (string): secret phrase
@@ -56,13 +57,13 @@ class ChainUtils:
 
     @staticmethod
     def hash(data_to_hash: str):
-        """sha256 hashing function
+        """hash calculates hash from string with sha256 hashing function
 
         Args:
             string_to_hash (str | dict): string/dict to be hashed
 
         Returns:
-            (_Hash object): object representing calculated hash from given `string_to_hash`
+            _Hash object: object representing calculated hash from given `string_to_hash`
         """
         if (isinstance(data_to_hash, dict)):
             data = dumps(data_to_hash)
@@ -73,7 +74,7 @@ class ChainUtils:
 
     @staticmethod
     def verify_signature(public_key, signature, data):
-        """verifies validity of signature
+        """verify_signature verifies validity of signature
 
         Args:
             public_key (VerifyingKey): public key associated with `signature`
@@ -84,7 +85,7 @@ class ChainUtils:
             Bool: True when the signature is valid, False otherwise
         """
 
-        if not (isinstance(data, str) or  isinstance(data, dict)):
+        if not (isinstance(data, str) or isinstance(data, dict)):
             raise ValueError('Need a dict or string, got {0!r}'.format(data))
         try:
             data_bytes = dumps(data)
@@ -96,7 +97,7 @@ class ChainUtils:
 
     @staticmethod
     def string_from_verifkey(verifying_key):
-        """turns bytes like public key, to its string representation
+        """ string_from_verifkey turns bytes like public key, to its string representation
 
         Args:
             verifying_key ([Bytes]): [public key]

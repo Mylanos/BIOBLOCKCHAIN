@@ -6,6 +6,7 @@ from bioblockchain.config import VIEW_SET_INTERVAL
 class View:
     """_summary_
     """
+
     def __init__(self, view_number, num_nodes):
         self._view_number = view_number
         self._num_nodes = num_nodes
@@ -16,7 +17,7 @@ class View:
 
     # To encode to json
     def get_view(self):
-        return self._view_number 
+        return self._view_number
 
     # Recover from json data.
     def set_view(self, view):
