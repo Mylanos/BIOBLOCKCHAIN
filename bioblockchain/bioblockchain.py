@@ -104,6 +104,45 @@ class BioBlockchain():
         print(Back.YELLOW + Fore.WHITE +
               f"***END OF {process.upper()}***".center(80) + Style.RESET_ALL)
 
+
+    async def run_authentication_no_feature_extraction(self, process,  compromised_matcher=False):
+        """
+        run_authentication_no_feature_extraction showcases malicious identification or verification scenario in the biometric system with replayed data
+
+        Args:
+            process (str): type of authentication/recognition process
+            claimed_identity (str, optional): in case of verification, claimed identity is needed. Defaults to None.
+            unknown_biometrics (bool, optional): new biometrics. Defaults to True.
+            unknown_user (bool, optional): _description_. Defaults to False.
+            compromised_matcher (bool, optional): _description_. Defaults to False.
+        """
+        new_process_id = ChainUtils.id()
+        print(Back.YELLOW + Fore.WHITE +
+              f"***START OF {process.upper()}***".center(80) + Style.RESET_ALL)
+        
+        # "KNOWN USER DATA" - imitated interception and its subsequent replay
+        data_sensory = self.node.get_sensor_data(
+                f"Naive way of acquiring known raw biometric data from sensor!")
+        biometric_data, _ = self.node.feature_extractor(
+            data_sensory, Biometric_Processes(process), new_process_id)
+        claimed_identity = next(iter(self.template_storage))
+
+        
+        matcher_data = self.node.matcher(biometric_data["features"], Biometric_Processes(
+            process), claimed_identity, new_process_id, compromised=compromised_matcher)
+        template = {}
+        template["features"] = biometric_data["features"]
+        # check blockchain result of the validation
+        blockchain_data = self.blockchain.search_by_process(new_process_id)
+        if not blockchain_data:
+            matcher_data["success"] = False
+            matcher_data["user"] = None
+        await self.pbft.validate_decision(matcher_data, template, self.node)
+        
+        print(Back.YELLOW + Fore.WHITE +
+              f"***END OF {process.upper()}***".center(80) + Style.RESET_ALL)
+
+
     def get_random_node(self):
         """
         get_random_node random node to simulate undeterministic choice of biometric terminal/node

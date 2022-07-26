@@ -355,7 +355,7 @@ class Node:
         if data["operation"] == "Feature Extraction":
             features = self.extract(biometrics["sensor_data"])
             print(Fore.CYAN +
-                  f'- NODE{self.id}\t\t\t executing feature extraction')
+                  f'- NODE{self.id}\t\t\t\t executing feature extraction')
             if self.always_false:
                 return "Proposing other artificial features to show node malfunction!"
             # if always true return the proposed result instantly
@@ -367,31 +367,36 @@ class Node:
                 return features
         if data["operation"] == "Matching":
             print(
-                Fore.CYAN + f'- NODE{self.id}\t\t\t executing matching ' + data["process_type"])
+                Fore.CYAN + f'- NODE{self.id}\t\t\t\t executing matching ' + data["process_type"])
             if self.always_false:
                 return "Proposing other artificial features to show node malfunction!"
             # if always true return the proposed result instantly
             if self.always_true:
                 return None
 
-            # firstly check if the proposed user is in database
-            if Biometric_Processes(data["process_type"]) == Biometric_Processes.VERIFICATION.value:
-                result = self.claimed_identity_in_database(
-                    biometrics["features"], data["claimed_identity"])
-                if result:
-                    # check if the users found are the same as proposed
-                    if result == data["user"]:
-                        return None
-                else:
-                    return "Didnt find the claimant in the database"
-            if Biometric_Processes(data["process_type"]) == Biometric_Processes.IDENTIFICATION.value:
-                result = self.features_in_database(biometrics["features"])
-                if result:
-                    # check if found user for given features is the same as proposed one
-                    if result == data["user"]:
-                        return None
-                else:
-                    return "Didnt find the individual in the database"
+            # check blockchain for previous result of the feature extraction validation
+            blockchain_data = self.blockchain.search_by_process(data["process_id"])
+            if blockchain_data:
+                # firstly check if the proposed user is in database
+                if Biometric_Processes(data["process_type"]) == Biometric_Processes.VERIFICATION.value:
+                    result = self.claimed_identity_in_database(
+                        biometrics["features"], data["claimed_identity"])
+                    if result:
+                        # check if the users found are the same as proposed
+                        if result == data["user"]:
+                            return None
+                    else:
+                        return "Didnt find the claimant in the database"
+                if Biometric_Processes(data["process_type"]) == Biometric_Processes.IDENTIFICATION.value:
+                    result = self.features_in_database(biometrics["features"])
+                    if result:
+                        # check if found user for given features is the same as proposed one
+                        if result == data["user"]:
+                            return None
+                    else:
+                        return "Didnt find the individual in the database"
+            else:
+                return "Prerequisite operations are not in the blockchain"
 
     def verify_block(self, block):
         """
@@ -404,7 +409,7 @@ class Node:
             Bool: is the block valid or not
         """
         print(Fore.CYAN +
-              f'- NODE{self.id}\t\t\t validates the proposed block!')
+              f'- NODE{self.id}\t\t\t\t validates the proposed block!')
         if self.always_false:
             return "Proposing other artificial block to show node malfunction!"
         if self.always_true:
@@ -560,6 +565,7 @@ class Node:
                               data["process_type"] + "!" + Style.RESET_ALL)
                         data["success"] = True
                         data["user"] = None
+                        data["score"] = 42
                     consensus_object.update_transaction(data, self.wallet)
                 else:
                     print(Back.RED + Fore.WHITE + "- Matching result has not been validated, failed " +

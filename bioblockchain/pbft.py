@@ -68,10 +68,10 @@ class PBFT:
                    "biometrics": biometric_data}
         if transaction_data["success"]:
             print(
-                Fore.GREEN + f"""- Creating new request for {transaction_data["operation"]} validation of POSITIVE {transaction_data["process_type"]}!""" + Style.RESET_ALL)
+                Fore.GREEN + f"""- Creating new request for {transaction_data["operation"]} validation of SUCCESS {transaction_data["process_type"]}!""" + Style.RESET_ALL)
         else:
             print(
-                Fore.RED + f"""- Creating new request for {transaction_data["operation"]} validation of NEGATIVE {transaction_data["process_type"]}!""" + Style.RESET_ALL)
+                Fore.RED + f"""- Creating new request for {transaction_data["operation"]} validation of FAILED {transaction_data["process_type"]}!""" + Style.RESET_ALL)
         await self.broadcast_request(content, user)
 
     # broadcasts transactions
@@ -254,7 +254,7 @@ class PBFT:
                 log.commit_sent = True
                 if self.verbose:
                     print(
-                        f"- NODE{recipient.id} (PREPARES:{log.prepare_count})\t sending commit messages")
+                        f"- NODE{recipient.id} (PREPARES:{log.prepare_count})\t\t sending commit messages")
                 await self.broadcast_commit(content=message.content, from_node=recipient)
 
         elif message.ttype == PBFT_Message.COMMIT:
@@ -280,17 +280,17 @@ class PBFT:
                 if result:
                     if self.verbose:
                         print(
-                            Fore.RED + f"- NODE{recipient.id} (COMMITS:{round(log.commit_count,2)})\t failed validation!, sending \"REPLY\" message!" + Fore.CYAN)
+                            Fore.RED + f"- NODE{recipient.id} (COMMITS:{round(log.commit_count,2)})\t\t failed validation!, sending \"REPLY\" message!" + Fore.CYAN)
                     else:
                         print(
-                            Fore.RED + f"- NODE{recipient.id} \t\t failed validation!, sending \"REPLY\" message!" + Fore.CYAN)
+                            Fore.RED + f"- NODE{recipient.id} \t\t\t failed validation!, sending \"REPLY\" message!" + Fore.CYAN)
                 else:
                     if self.verbose:
                         print(
-                            Fore.LIGHTGREEN_EX + f"- NODE{recipient.id} (COMMITS:{round(log.commit_count,2)})\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
+                            Fore.LIGHTGREEN_EX + f"- NODE{recipient.id} (COMMITS:{round(log.commit_count,2)})\t\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
                     else:
                         print(
-                            Fore.LIGHTGREEN_EX + f"- NODE{recipient.id} \t\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
+                            Fore.LIGHTGREEN_EX + f"- NODE{recipient.id} \t\t\t validated!, sending \"REPLY\" message!" + Fore.CYAN)
 
                 # transmit new message
                 log.reply_sent = True
@@ -306,9 +306,9 @@ class PBFT:
             # diferentiate coloring of the print
             if self.verbose:
                 if result:
-                    print(f'- NODE{recipient.id} (DISAGREED REPLIES:{round(log.reply_count_disagree - recipient.weight, 2)}->{round(log.reply_count_disagree,2)})\t received message({json.dumps(message.ttype)})')
+                    print(f'- NODE{recipient.id} (NEG. REPLIES:{round(log.reply_count_disagree - recipient.weight, 2)}->{round(log.reply_count_disagree,2)})\t received message({json.dumps(message.ttype)})')
                 else:
-                    print(f'- NODE{recipient.id} (AGREED REPLIES:{round(log.reply_count_agree - recipient.weight, 2)}->{round(log.reply_count_agree,2)})\t received message({json.dumps(message.ttype)})')
+                    print(f'- NODE{recipient.id} (POS. REPLIES:{round(log.reply_count_agree - recipient.weight, 2)}->{round(log.reply_count_agree,2)})\t received message({json.dumps(message.ttype)})')
 
             # wait for enough reply messages, to go to another phase
             if log.reply_flag and not log.reply_operation_executed:

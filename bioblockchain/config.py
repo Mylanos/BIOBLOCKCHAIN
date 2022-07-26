@@ -2,7 +2,7 @@
 NUM_NODES = 4  # = 3f + 1
 
 #: total count of replicas participating in the PBFT network
-NUM_PARTICIPATING_NODES = 4  # = 3f + 1
+NUM_PARTICIPATING_NODES = 4 # = 3f + 1
 
 #: maximum number of faulty nodes
 MAX_FAULT = (NUM_PARTICIPATING_NODES - 1) // 3

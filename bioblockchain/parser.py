@@ -20,6 +20,8 @@ class MyParser:
                            default=False, help='scenario when one of the nodes always returns true.')
         group.add_argument('-nmaf', '--node_malfunction_always_false', action='store_true',
                            default=False, help='scenario when one of the nodes always returns false.')
+        group.add_argument('-femi', '--feature_extraction_matcher_channel_intercepted', action='store_true',
+                           default=False, help='scenario when the channel between feature extractor and matcher was intercepted and the data replayed.')
 
         self.args = parser.parse_args()
         self.verbose = self.args.verbose
@@ -28,3 +30,4 @@ class MyParser:
         self.feature_extraction_malfunctioned = self.args.feature_extraction_malfunctioned
         self.node_malfunction_always_true = self.args.node_malfunction_always_true
         self.node_malfunction_always_false = self.args.node_malfunction_always_false
+        self.feature_extraction_matcher_channel_intercepted = self.args.feature_extraction_matcher_channel_intercepted

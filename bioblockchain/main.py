@@ -60,6 +60,10 @@ def run():
         asyncio.run(bio_blockchain.run_enrollment())
         print("")
         asyncio.run(bio_blockchain.run_authentication("identification"))
+    elif parser.feature_extraction_matcher_channel_intercepted:
+        asyncio.run(bio_blockchain.run_enrollment())
+        print("")
+        asyncio.run(bio_blockchain.run_authentication_no_feature_extraction("verification"))
     else:
         asyncio.run(bio_blockchain.run_enrollment())
         print("")
@@ -71,7 +75,11 @@ def run():
         if query_yes_no("Do you want to display the contents of blockchain?"):
             bio_blockchain.blockchain.display_chain()
         if query_yes_no("Do you want to display the contents of template database?"):
-            print(bio_blockchain.template_storage)
+            print ("TEMPLATE DATABASE".center(120))
+            print("".center(120, '-'))
+            for key, value in bio_blockchain.template_storage.items():
+                print ("USER_ID : {:<10} \nTEMPLATE : {:<10}".format(key, value))
+                print("".center(120, '-'))
 
 
 if __name__ == "__main__":
