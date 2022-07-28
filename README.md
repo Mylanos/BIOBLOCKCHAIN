@@ -4,14 +4,18 @@
 All modules of the program are implemented in Python language and are documentated dynamically by the Sphinx library, which generates webpages from annotated comments of given classes, functions, or variables. This choice of technologies allows for ease of implementation for the proof-of-concept demonstrator of messages in the proposed system. All modules are written from scratch, using only publicly available standard, cryptographic, or asynchrounous libraries. For ease of use and to guarantee correct versions of the libraries, the program was developed using virtual environment and all required libraries are specified in requirements.txt.
 
  ## HOW TO RUN
-  - python3 -m venv .venv
-  - make install -> installs requirements.txt to venv
-  - source .venv/bin/activate -> start venv
-  - make run -> run simulator script
-  - make run_verbose -> run verbose simulator script
-  - make tests -> run tests
+  - python3 -m venv .venv -> creates new empty venv
+  - make install -> installs requirements.txt into venv
+  - source .venv/bin/activate -> activates created venv
+  - make run -> run simulator script with default operation (success enrollment and verification/identification)
+  - make tests -> runs unit tests
+  - make help -> shows help describing how to run the program with all possible arguments
+  
+# CLEANUP
+  - make clean -> clean the folder
+  - deactivate -> deactivates the venv
 
-# DOCUMENTATION
+# HOW TO COMPILE DOCUMENTATION
  - enter /docs folder
  - make html
  - open _build/html/index.html
