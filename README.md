@@ -17,5 +17,6 @@ All modules of the program are implemented in Python language and are documentat
 
 # HOW TO COMPILE DOCUMENTATION
  - enter /docs folder
- - make html
- - open _build/html/index.html
+ - make html -> compiles the documentation and generates html output into _build
+ - open _build/html/index.html -> open documentation in html
+ - opem _build/pdf/bioblockchain.pdf -> open documentation in pdf
