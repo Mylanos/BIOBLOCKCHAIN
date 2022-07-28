@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bioblockchain.utils &mdash; Bioblockchain 2022.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Bioblockchain
+          </a>
+              <div class="version">
+                2022.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../bioblockchain.html">bioblockchain</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Bioblockchain</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>bioblockchain.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bioblockchain.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">sha256</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid1</span>
+<span class="kn">from</span> <span class="nn">ecdsa</span> <span class="kn">import</span> <span class="n">NIST256p</span><span class="p">,</span> <span class="n">SigningKey</span>
+<span class="kn">from</span> <span class="nn">ecdsa.util</span> <span class="kn">import</span> <span class="n">randrange_from_seed__trytryagain</span>
+<span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <span class="n">dumps</span>
+
+
+<div class="viewcode-block" id="ChainUtils"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.utils.ChainUtils">[docs]</a><span class="k">class</span> <span class="nc">ChainUtils</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ChainUtils contains static methods for cryptographic operations and operations with blockchain</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Raised when passed arguments to verify_signature are of wrong type </span>
+<span class="sd">        BadSignatureError: Raised in verify_signature when the signature is wrong</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ChainUtils.transactionlist_to_json"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.utils.ChainUtils.transactionlist_to_json">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">transactionlist_to_json</span><span class="p">(</span><span class="n">tx_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        transactionlist_to_json converts Transaction objects to list of dictionaries(json)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tx_list (List or Transaction): list of transactions or single Transaction</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List: list of dictionaries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">json_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">json_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tx</span><span class="o">.</span><span class="n">toJSON</span><span class="p">()</span> <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="n">tx_list</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">json_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tx_list</span><span class="o">.</span><span class="n">toJSON</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="n">json_list</span></div>
+
+<div class="viewcode-block" id="ChainUtils.id"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.utils.ChainUtils.id">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">id</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;generates UUID(universally unique identifier)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string]: generated UUID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid1</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="ChainUtils.generate_key_from_seed"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.utils.ChainUtils.generate_key_from_seed">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generate_key_from_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;generates private key from secret phrase</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            seed (string): secret phrase</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            SigningKey: private key generated from `seed`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">secexp</span> <span class="o">=</span> <span class="n">randrange_from_seed__trytryagain</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">NIST256p</span><span class="o">.</span><span class="n">order</span><span class="p">)</span>
+        <span class="n">sk</span> <span class="o">=</span> <span class="n">SigningKey</span><span class="o">.</span><span class="n">from_secret_exponent</span><span class="p">(</span><span class="n">secexp</span><span class="p">,</span> <span class="n">NIST256p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sk</span></div>
+
+<div class="viewcode-block" id="ChainUtils.hash"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.utils.ChainUtils.hash">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="n">data_to_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;sha256 hashing function</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string_to_hash (str | dict): string/dict to be hashed</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (_Hash object): object representing calculated hash from given `string_to_hash`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">data_to_hash</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">dumps</span><span class="p">(</span><span class="n">data_to_hash</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data_to_hash</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="c1">#encoded_string = string_to_hash.encode(&#39;utf-8&#39;)</span>
+        <span class="k">return</span> <span class="n">sha256</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChainUtils.verify_signature"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.utils.ChainUtils.verify_signature">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">verify_signature</span><span class="p">(</span><span class="n">public_key</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;verifies validity of signature</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            public_key (VerifyingKey): public key associated with `signature`</span>
+<span class="sd">            signature (Bytes): encoded signature over `data`</span>
+<span class="sd">            data (String): data which was used for signature calculation</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Bool: True when the signature is valid, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Need a dict or string, got </span><span class="si">{0!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data_bytes</span> <span class="o">=</span> <span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">public_key</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">data_bytes</span><span class="p">,</span> <span class="n">hashfunc</span><span class="o">=</span><span class="n">sha256</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Signature is not valid!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="ChainUtils.string_from_verifkey"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.utils.ChainUtils.string_from_verifkey">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">string_from_verifkey</span><span class="p">(</span><span class="n">verifying_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;turns bytes like public key, to its string representation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            verifying_key ([Bytes]): [public key]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            String: public key&#39;s string representation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">verifying_key</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Marek Ziska.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -51,8 +51,12 @@ class Node:
         self.always_false = False
         # weight of the node
         self.weight = weight
+        # compromised feature extractor
+        self.compromised_extraction = False
+        # compromised matcher
+        self.compromised_matching = False
 
-    def matcher(self, features, mode, claimed_identity, process_id, compromised):
+    def matcher(self, features, mode, claimed_identity, process_id):
         """
         matcher operates as the matcher component that is proposing the operation to the network
 
@@ -76,11 +80,7 @@ class Node:
             data["process_type"] = "identification"
             data["match_timestamp"] = "12.07.1999"
 
-            if compromised:
-                data["user"] = claimed_identity
-                data["score"] = 87
-                data["success"] = True
-            elif result:
+            if result:
                 data["user"] = result
                 data["score"] = 87
                 data["success"] = True
@@ -96,11 +96,7 @@ class Node:
             data["claimed_identity"] = claimed_identity
             data["match_timestamp"] = "12.07.1999"
 
-            if compromised:
-                data["user"] = claimed_identity
-                data["score"] = 87
-                data["success"] = True
-            elif result:
+            if result:
                 data["user"] = result
                 # maybe do custom scores
                 data["score"] = 87
@@ -122,7 +118,8 @@ class Node:
         Returns:
             str: found key/identifier for given features/user or None
         """
-
+        if self.compromised_matching:
+            return "Some artificially chosen user that happens to be in the system"
         for key, feature in self.template_storage.items():
             if features == feature:
                 return key
@@ -141,6 +138,8 @@ class Node:
         """
         # search for claimed user in DB
         search_result = self.search_user_in_database(claimed_identity)
+        if self.compromised_matching:
+            return claimed_identity
         if search_result:
             # compare features of the user found by claimed_identity
             if self.template_storage[search_result] == features:
@@ -262,7 +261,7 @@ class Node:
         raw_data = h.hexdigest()
         return raw_data
 
-    def extract(self, data):
+    def extract(self, data, compromised=False):
         """naive way of extracting features from biometric data
 
         Args:
@@ -271,11 +270,26 @@ class Node:
         Returns:
             Str: string representation of extracted features
         """
-        h = md5(bytes(data, encoding='utf8'))
-        features = h.hexdigest()
-        return features
+        if self.compromised_extraction:
+            return "This is a representation of artificial features, set by the attacker who compromised one node!"
+        else:
+            h = md5(bytes(data, encoding='utf8'))
+            features = h.hexdigest()
+            return features
 
-    def feature_extractor(self, data_sensory, process_type, process_id, compromised_feature_extractor=False):
+    def get_matching_compromised(self):
+        """
+        get_extraction_compromised after calling this function the nodes feature extraction module gets compromised
+        """
+        self.compromised_matching = True
+
+    def get_extraction_compromised(self):
+        """
+        get_extraction_compromised after calling this function the nodes feature extraction module gets compromised
+        """
+        self.compromised_extraction = True
+
+    def feature_extractor(self, data_sensory, process_type, process_id):
         """simulation of feature extraction component
 
         Args:
@@ -290,10 +304,7 @@ class Node:
         """
         # provisional feature extraction
         features = None
-        if compromised_feature_extractor:
-            features = "This is a representation of artificial features, set by the attacker who compromised one node!"
-        else:
-            features = self.extract(data_sensory)
+        features = self.extract(data_sensory)
         transaction_data = {}
         biometric_data = {}
         if process_type == Biometric_Processes.ENROLLMENT:

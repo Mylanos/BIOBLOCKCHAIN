@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bioblockchain.main &mdash; Bioblockchain 2022.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Bioblockchain
+          </a>
+              <div class="version">
+                2022.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../bioblockchain.html">bioblockchain</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Bioblockchain</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>bioblockchain.main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bioblockchain.main</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">from</span> <span class="nn">bioblockchain.bioblockchain</span> <span class="kn">import</span> <span class="n">BioBlockchain</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">bioblockchain.parser</span> <span class="kn">import</span> <span class="n">MyParser</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">   Original code Copyright (c) 2011 fmark[1]</span>
+<span class="sd">   Modified code Copyright (c) 2022 Marek Ziska, @marek_ziska7[2]</span>
+<span class="sd">   Licensed under the CC-BY-SA 3.0[3]</span>
+<span class="sd">   Original code posted to this question[4] and answer[5] from</span>
+<span class="sd">   stackoverflow.com where user contributions are licensed under</span>
+<span class="sd">   CC-BY-SA 3.0 with attribution required.</span>
+<span class="sd">   [1]: https://stackoverflow.com/users/103225/fmark</span>
+<span class="sd">   [2]: https://twitter.com/marek_ziska</span>
+<span class="sd">   [3]: http://creativecommons.org/licenses/by-sa/3.0/</span>
+<span class="sd">   [4]: https://stackoverflow.com/q/3041986</span>
+<span class="sd">   [5]: https://stackoverflow.com/a/3041990</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="query_yes_no"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.main.query_yes_no">[docs]</a><span class="k">def</span> <span class="nf">query_yes_no</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    query_yes_no Ask a yes/no question via and returns the answer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        question (Str): question asked to the user</span>
+<span class="sd">        default (Str, optional): Default answear when the entered answear is blank. Defaults to &quot;yes&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Bool:  Depending on the answer returns True for &quot;yes&quot; or False for &quot;no&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="s2">&quot;no&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">question</span> <span class="o">+</span> <span class="s2">&quot; [Y/n] &quot;</span><span class="p">)</span>
+        <span class="n">choice</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">valid</span><span class="p">[</span><span class="n">default</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">valid</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">valid</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please enter &#39;yes&#39; or &#39;no&#39; answear! (or &#39;y&#39; or &#39;n&#39;).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.main.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    run is a main script running the bioblockchain demonstrator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">MyParser</span><span class="p">()</span>
+    <span class="n">bio_blockchain</span> <span class="o">=</span> <span class="n">BioBlockchain</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># in this scenario unknown user tries to verify himself with his own biometrics as someone who is known for the system</span>
+    <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">unknown_individual_verification</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_enrollment</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">bio_blockchain</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">get_matching_compromised</span><span class="p">()</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_authentication</span><span class="p">(</span>
+            <span class="s2">&quot;verification&quot;</span><span class="p">,</span> <span class="n">unknown_biometrics</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="c1"># in this scenario known user tries to verify himself as someone else</span>
+    <span class="k">elif</span> <span class="n">parser</span><span class="o">.</span><span class="n">unknown_individual_identification</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_enrollment</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">bio_blockchain</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">get_matching_compromised</span><span class="p">()</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_authentication</span><span class="p">(</span>
+            <span class="s2">&quot;identification&quot;</span><span class="p">,</span> <span class="n">unknown_biometrics</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">parser</span><span class="o">.</span><span class="n">feature_extraction_malfunctioned</span><span class="p">:</span>
+        <span class="n">bio_blockchain</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">get_extraction_compromised</span><span class="p">()</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_enrollment</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="n">parser</span><span class="o">.</span><span class="n">node_malfunction_always_true</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">bio_blockchain</span><span class="o">.</span><span class="n">get_random_node</span><span class="p">()</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">always_true</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">bio_blockchain</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">get_extraction_compromised</span><span class="p">()</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_enrollment</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="n">parser</span><span class="o">.</span><span class="n">node_malfunction_always_false</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">bio_blockchain</span><span class="o">.</span><span class="n">get_random_node</span><span class="p">()</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">always_false</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_enrollment</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_authentication</span><span class="p">(</span><span class="s2">&quot;identification&quot;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">parser</span><span class="o">.</span><span class="n">feature_extraction_matcher_channel_intercepted</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_enrollment</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_authentication_no_feature_extraction</span><span class="p">(</span><span class="s2">&quot;verification&quot;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_enrollment</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_authentication</span><span class="p">(</span><span class="s2">&quot;verification&quot;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bio_blockchain</span><span class="o">.</span><span class="n">run_authentication</span><span class="p">(</span><span class="s2">&quot;identification&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s2">&quot;Do you want to display the contents of blockchain?&quot;</span><span class="p">):</span>
+            <span class="n">bio_blockchain</span><span class="o">.</span><span class="n">blockchain</span><span class="o">.</span><span class="n">display_chain</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s2">&quot;Do you want to display the contents of template database?&quot;</span><span class="p">):</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;TEMPLATE DATABASE&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">120</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">bio_blockchain</span><span class="o">.</span><span class="n">template_storage</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;USER_ID : </span><span class="si">{:&lt;10}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">TEMPLATE : </span><span class="si">{:&lt;10}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">))</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Marek Ziska.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

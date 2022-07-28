@@ -27,7 +27,7 @@ class BioBlockchain():
         self.pbft = PBFT(self.nodes, verbosity)
         self.node = self.get_random_node()
 
-    async def run_enrollment(self, compromised_feature_extractor=False):
+    async def run_enrollment(self):
         """
         run_enrollment showcases enrollment scenario of a new user to the biometric system
 
@@ -46,7 +46,7 @@ class BioBlockchain():
         print("- Feature extractor processing raw data...")
         # feature extraction of collected data on approached terminal
         biometric_data, feature_extraction_data = self.node.feature_extractor(
-            data_sensory, Biometric_Processes.ENROLLMENT, new_process_id, compromised_feature_extractor=compromised_feature_extractor)
+            data_sensory, Biometric_Processes.ENROLLMENT, new_process_id)
         print("- Extracted features requesting to be validated...")
         # extracted features on approached terminal
         await self.pbft.validate_decision(feature_extraction_data, biometric_data, self.node)
@@ -54,7 +54,7 @@ class BioBlockchain():
         print(Back.YELLOW + Fore.WHITE +
               "***END OF ENROLLMENT***".center(80) + Style.RESET_ALL)
 
-    async def run_authentication(self, process, claimed_identity=None, unknown_biometrics=True, unknown_user=False, compromised_matcher=False):
+    async def run_authentication(self, process, claimed_identity=None, unknown_biometrics=True, unknown_user=False):
         """
         run_authentication showcases identification or verification scenario in the biometric system
 
@@ -94,7 +94,7 @@ class BioBlockchain():
         blockchain_data = self.blockchain.search_by_process(new_process_id)
         if blockchain_data["success"]:
             matcher_data = self.node.matcher(biometric_data["features"], Biometric_Processes(
-                process), claimed_identity, new_process_id, compromised=compromised_matcher)
+                process), claimed_identity, new_process_id)
             template = {}
             template["features"] = biometric_data["features"]
             await self.pbft.validate_decision(matcher_data, template, self.node)
@@ -105,7 +105,7 @@ class BioBlockchain():
               f"***END OF {process.upper()}***".center(80) + Style.RESET_ALL)
 
 
-    async def run_authentication_no_feature_extraction(self, process,  compromised_matcher=False):
+    async def run_authentication_no_feature_extraction(self, process):
         """
         run_authentication_no_feature_extraction showcases malicious identification or verification scenario in the biometric system with replayed data
 
@@ -129,7 +129,7 @@ class BioBlockchain():
 
         
         matcher_data = self.node.matcher(biometric_data["features"], Biometric_Processes(
-            process), claimed_identity, new_process_id, compromised=compromised_matcher)
+            process), claimed_identity, new_process_id)
         template = {}
         template["features"] = biometric_data["features"]
         # check blockchain result of the validation

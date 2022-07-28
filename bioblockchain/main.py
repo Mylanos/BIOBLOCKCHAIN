@@ -4,6 +4,19 @@ import asyncio
 from bioblockchain.parser import MyParser
 
 
+"""
+   Original code Copyright (c) 2011 fmark[1]
+   Modified code Copyright (c) 2022 Marek Ziska, @marek_ziska7[2]
+   Licensed under the CC-BY-SA 3.0[3]
+   Original code posted to this question[4] and answer[5] from
+   stackoverflow.com where user contributions are licensed under
+   CC-BY-SA 3.0 with attribution required.
+   [1]: https://stackoverflow.com/users/103225/fmark
+   [2]: https://twitter.com/marek_ziska
+   [3]: http://creativecommons.org/licenses/by-sa/3.0/
+   [4]: https://stackoverflow.com/q/3041986
+   [5]: https://stackoverflow.com/a/3041990
+"""
 def query_yes_no(question, default="yes"):
     """
     query_yes_no Ask a yes/no question via and returns the answer.
@@ -38,22 +51,24 @@ def run():
     if parser.unknown_individual_verification:
         asyncio.run(bio_blockchain.run_enrollment())
         print("")
+        bio_blockchain.node.get_matching_compromised()
         asyncio.run(bio_blockchain.run_authentication(
-            "verification", unknown_biometrics=False, compromised_matcher=True))
+            "verification", unknown_biometrics=False))
     # in this scenario known user tries to verify himself as someone else
     elif parser.unknown_individual_identification:
         asyncio.run(bio_blockchain.run_enrollment())
         print("")
+        bio_blockchain.node.get_matching_compromised()
         asyncio.run(bio_blockchain.run_authentication(
-            "identification", unknown_biometrics=False, compromised_matcher=True))
+            "identification", unknown_biometrics=False))
     elif parser.feature_extraction_malfunctioned:
-        asyncio.run(bio_blockchain.run_enrollment(
-            compromised_feature_extractor=True))
+        bio_blockchain.node.get_extraction_compromised()
+        asyncio.run(bio_blockchain.run_enrollment())
     elif parser.node_malfunction_always_true:
         node = bio_blockchain.get_random_node()
         node.always_true = True
-        asyncio.run(bio_blockchain.run_enrollment(
-            compromised_feature_extractor=True))
+        bio_blockchain.node.get_extraction_compromised()
+        asyncio.run(bio_blockchain.run_enrollment())
     elif parser.node_malfunction_always_false:
         node = bio_blockchain.get_random_node()
         node.always_false = True

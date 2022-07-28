@@ -18,7 +18,7 @@ class PBFT:
         # primary node for now hardly set TODO - changing views with primary nodes
         self.primary_node = self.get_leader()
         # long repeating list of nodes for round robin, async generator might be needed in future versions
-        self.iter_nodes = self.nodes * config.ITER_LIST_AMMOUNT
+        # self.iter_nodes = self.nodes * config.ITER_LIST_AMMOUNT
         self.iter_index = 0
         self.participating_nodes = []
 
@@ -28,7 +28,7 @@ class PBFT:
         Returns:
             Node: Node object with current leader
         """
-        index = self.view % config.NUM_NODES
+        index = self.view % config.NUM_PARTICIPATING_NODES
         return self.nodes[index]
 
     async def async_range(self, count):
@@ -36,6 +36,7 @@ class PBFT:
             yield(i)
             await asyncio.sleep(0)
 
+    """
     async def round_robin(self):
         self.participating_nodes.clear()
         for x in range(config.NUM_PARTICIPATING_NODES - 1):
@@ -50,8 +51,7 @@ class PBFT:
                     self.iter_nodes[self.iter_index])
             self.iter_index += 1
         self.participating_nodes.append(self.primary_node)
-
-    # broadcasts transactions
+    """
 
     async def validate_decision(self, transaction_data, biometric_data, user):
         """interface of the pbft protocol where the Transaction is made for given operation and broadcasts request to validate decision/operation to PBFT 

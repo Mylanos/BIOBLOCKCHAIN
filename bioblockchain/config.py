@@ -1,14 +1,8 @@
-#: total count of replica in the whole bioblockchain system
-NUM_NODES = 4  # = 3f + 1
-
 #: total count of replicas participating in the PBFT network
-NUM_PARTICIPATING_NODES = 4 # = 3f + 1
+NUM_PARTICIPATING_NODES = 5 # = 3f + 1
 
 #: maximum number of faulty nodes
 MAX_FAULT = (NUM_PARTICIPATING_NODES - 1) // 3
-
-#: ammount of items in list for round robin looping
-ITER_LIST_AMMOUNT = 8 * NUM_NODES
 
 #: minimum weight of prepares needed to enter commit phase
 MIN_WEIGHT_PREPARE = 2 / 3

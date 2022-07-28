@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bioblockchain &mdash; Bioblockchain 2022.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to Bioblockchain’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Bioblockchain
+          </a>
+              <div class="version">
+                2022.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">bioblockchain</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.bioblockchain">bioblockchain.bioblockchain module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.block">bioblockchain.block module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.blockchain">bioblockchain.blockchain module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.config">bioblockchain.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.main">bioblockchain.main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.message">bioblockchain.message module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bioblockchain-message-log-module">bioblockchain.message_log module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.node">bioblockchain.node module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.parser">bioblockchain.parser module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.pbft">bioblockchain.pbft module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.chain_utils">bioblockchain.chain_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.transaction">bioblockchain.transaction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bioblockchain-time-utils-module">bioblockchain.time_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain.wallet">bioblockchain.wallet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bioblockchain">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bioblockchain</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>bioblockchain</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/bioblockchain.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bioblockchain">
+<h1>bioblockchain<a class="headerlink" href="#bioblockchain" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-bioblockchain.bioblockchain">
+<span id="bioblockchain-bioblockchain-module"></span><h2>bioblockchain.bioblockchain module<a class="headerlink" href="#module-bioblockchain.bioblockchain" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.bioblockchain.BioBlockchain">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.bioblockchain.</span></span><span class="sig-name descname"><span class="pre">BioBlockchain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbosity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/bioblockchain.html#BioBlockchain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.bioblockchain.BioBlockchain" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>BioBlockchain is a main class containing scenarios showcasing integration of blockchain and biometric system processes</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.bioblockchain.BioBlockchain.get_random_node">
+<span class="sig-name descname"><span class="pre">get_random_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/bioblockchain.html#BioBlockchain.get_random_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.bioblockchain.BioBlockchain.get_random_node" title="Permalink to this definition"></a></dt>
+<dd><p>get_random_node random node to simulate undeterministic choice of biometric terminal/node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>node selected from the network</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node">Node</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.bioblockchain.BioBlockchain.run_authentication">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_authentication</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">process</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">claimed_identity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unknown_biometrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unknown_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/bioblockchain.html#BioBlockchain.run_authentication"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.bioblockchain.BioBlockchain.run_authentication" title="Permalink to this definition"></a></dt>
+<dd><p>run_authentication showcases identification or verification scenario in the biometric system</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>process</strong> (<em>str</em>) – type of authentication/recognition process</p></li>
+<li><p><strong>claimed_identity</strong> (<em>str</em><em>, </em><em>optional</em>) – in case of verification, claimed identity is needed. Defaults to None.</p></li>
+<li><p><strong>unknown_biometrics</strong> (<em>bool</em><em>, </em><em>optional</em>) – new biometrics. Defaults to True.</p></li>
+<li><p><strong>unknown_user</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p></li>
+<li><p><strong>compromised_matcher</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.bioblockchain.BioBlockchain.run_authentication_no_feature_extraction">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_authentication_no_feature_extraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">process</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/bioblockchain.html#BioBlockchain.run_authentication_no_feature_extraction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.bioblockchain.BioBlockchain.run_authentication_no_feature_extraction" title="Permalink to this definition"></a></dt>
+<dd><p>run_authentication_no_feature_extraction showcases malicious identification or verification scenario in the biometric system with replayed data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>process</strong> (<em>str</em>) – type of authentication/recognition process</p></li>
+<li><p><strong>claimed_identity</strong> (<em>str</em><em>, </em><em>optional</em>) – in case of verification, claimed identity is needed. Defaults to None.</p></li>
+<li><p><strong>unknown_biometrics</strong> (<em>bool</em><em>, </em><em>optional</em>) – new biometrics. Defaults to True.</p></li>
+<li><p><strong>unknown_user</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p></li>
+<li><p><strong>compromised_matcher</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.bioblockchain.BioBlockchain.run_enrollment">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_enrollment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/bioblockchain.html#BioBlockchain.run_enrollment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.bioblockchain.BioBlockchain.run_enrollment" title="Permalink to this definition"></a></dt>
+<dd><p>run_enrollment showcases enrollment scenario of a new user to the biometric system</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>compromised_feature_extractor</strong> (<em>bool</em><em>, </em><em>optional</em>) – True when the proposing extractor is compromised. Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.block">
+<span id="bioblockchain-block-module"></span><h2>bioblockchain.block module<a class="headerlink" href="#module-bioblockchain.block" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.block.Block">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.block.</span></span><span class="sig-name descname"><span class="pre">Block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proposer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/block.html#Block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.block.Block" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>class representing one block in the blockchain</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.block_content_to_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">block_content_to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/block.html#Block.block_content_to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.block.Block.block_content_to_json" title="Permalink to this definition"></a></dt>
+<dd><p>block_content_to_json constructs json/dict from block’s content</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timestamp</strong> (<em>String</em>) – date</p></li>
+<li><p><strong>previous_hash</strong> (<em>Hash object</em>) – hash pointing at the last block</p></li>
+<li><p><strong>data</strong> (<em>[</em><em>Transaction objects list</em><em>]</em>) – transactions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict/json containing info about block</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.block_hash">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">block_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/block.html#Block.block_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.block.Block.block_hash" title="Permalink to this definition"></a></dt>
+<dd><p>block_hash calculate hash of Block object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>block</strong> (<a class="reference internal" href="#bioblockchain.block.Block" title="bioblockchain.block.Block"><em>Block</em></a>) – block object to calculate hash on</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>hash of the object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a href="#id1"><span class="problematic" id="id2">Hash_</span></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.create_block">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">previous_block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proposer_wallet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/block.html#Block.create_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.block.Block.create_block" title="Permalink to this definition"></a></dt>
+<dd><p>create_block is a static method that instantiates Block class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>previous_block</strong> (<em>Block object</em>) – previous block needed for needed attachment in the new block</p></li>
+<li><p><strong>data</strong> (<em>[</em><em>Transaction object list</em><em>]</em>) – list of new transactions</p></li>
+<li><p><strong>proposer_wallet</strong> (<em>Wallet object</em>) – voted proposer to append new block to blockchain</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>new Block instance</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Block object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.genesis">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">genesis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/block.html#Block.genesis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.block.Block.genesis" title="Permalink to this definition"></a></dt>
+<dd><p>genesis creates genesis block of bioblockchain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>genesis block</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Block object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.hash">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hash</span></span><a class="headerlink" href="#bioblockchain.block.Block.hash" title="Permalink to this definition"></a></dt>
+<dd><p>hash is a property representing hash value of given block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>hash object from hashlib library</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Hash</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.hash_hexdigest">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hash_hexdigest</span></span><a class="headerlink" href="#bioblockchain.block.Block.hash_hexdigest" title="Permalink to this definition"></a></dt>
+<dd><p>hash_hexdigest is a property representing string hash value of given block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>string hash value</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.previous_hash">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">previous_hash</span></span><a class="headerlink" href="#bioblockchain.block.Block.previous_hash" title="Permalink to this definition"></a></dt>
+<dd><p>previous_hash is a property representing hash value of previous block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>hash object from hashlib library</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>_Hash</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.previous_hash_hexdigest">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">previous_hash_hexdigest</span></span><a class="headerlink" href="#bioblockchain.block.Block.previous_hash_hexdigest" title="Permalink to this definition"></a></dt>
+<dd><p>previous_hash_hexdigest is a property representing string hash value of previous block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>string hash value of previous block</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.search_by_process">
+<span class="sig-name descname"><span class="pre">search_by_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">process_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/block.html#Block.search_by_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.block.Block.search_by_process" title="Permalink to this definition"></a></dt>
+<dd><p>search_by_process looks for transaction containing given process_id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>process_id</strong> (<em>Str</em>) – string representation of the searched process_id</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>found Transaction or None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bioblockchain.transaction.Transaction" title="bioblockchain.transaction.Transaction">Transaction</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.seq_number">
+<span class="sig-name descname"><span class="pre">seq_number</span></span><a class="headerlink" href="#bioblockchain.block.Block.seq_number" title="Permalink to this definition"></a></dt>
+<dd><p>Payload</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.sign_block_hash">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sign_block_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/block.html#Block.sign_block_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.block.Block.sign_block_hash" title="Permalink to this definition"></a></dt>
+<dd><p>sign_block_hash signs passed hash value with given wallet</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hash</strong> (<a href="#id3"><span class="problematic" id="id4">Hash_</span></a> object) – passed hash value</p></li>
+<li><p><strong>wallet</strong> (<em>Wallet object</em>) – wallet object signing the hash value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>signature</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>signature</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.verify_block">
+<span class="sig-name descname"><span class="pre">verify_block</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/block.html#Block.verify_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.block.Block.verify_block" title="Permalink to this definition"></a></dt>
+<dd><p>verifies block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if valid block, else False</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.block.Block.verify_proposer">
+<span class="sig-name descname"><span class="pre">verify_proposer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wallet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bioblockchain.wallet.Wallet" title="bioblockchain.wallet.Wallet"><span class="pre">Wallet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/block.html#Block.verify_proposer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.block.Block.verify_proposer" title="Permalink to this definition"></a></dt>
+<dd><p>verify_proposer verifies if the block has been proposed by a given wallet</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wallet</strong> (<a class="reference internal" href="#bioblockchain.wallet.Wallet" title="bioblockchain.wallet.Wallet"><em>Wallet</em></a>) – wallet being verified</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if valid proposer, else False</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.blockchain">
+<span id="bioblockchain-blockchain-module"></span><h2>bioblockchain.blockchain module<a class="headerlink" href="#module-bioblockchain.blockchain" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.blockchain.Blockchain">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.blockchain.</span></span><span class="sig-name descname"><span class="pre">Blockchain</span></span><a class="reference internal" href="_modules/bioblockchain/blockchain.html#Blockchain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.blockchain.Blockchain" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>blockchain class containing list(chain) of blocks</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.blockchain.Blockchain.add_block">
+<span class="sig-name descname"><span class="pre">add_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bioblockchain.block.Block" title="bioblockchain.block.Block"><span class="pre">Block</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/blockchain.html#Blockchain.add_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.blockchain.Blockchain.add_block" title="Permalink to this definition"></a></dt>
+<dd><p>add_block appends block to the blockchain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>block</strong> (<em>Block object</em>) – block to be appended</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>appended block</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Block object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.blockchain.Blockchain.create_block">
+<span class="sig-name descname"><span class="pre">create_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transactions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/blockchain.html#Blockchain.create_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.blockchain.Blockchain.create_block" title="Permalink to this definition"></a></dt>
+<dd><p>create_block wrapper function for Block instantiation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transactions</strong> (<em>[</em><em>Transaction object</em><em>]</em>) – list of transactions that will be stored in newly created block</p></li>
+<li><p><strong>wallet</strong> (<em>Wallet object</em>) – proposer of the block</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>instance of Block object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Block object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.blockchain.Blockchain.display_chain">
+<span class="sig-name descname"><span class="pre">display_chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/blockchain.html#Blockchain.display_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.blockchain.Blockchain.display_chain" title="Permalink to this definition"></a></dt>
+<dd><p>prints out the blockchain content</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.blockchain.Blockchain.is_valid_block">
+<span class="sig-name descname"><span class="pre">is_valid_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bioblockchain.block.Block" title="bioblockchain.block.Block"><span class="pre">Block</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/blockchain.html#Blockchain.is_valid_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.blockchain.Blockchain.is_valid_block" title="Permalink to this definition"></a></dt>
+<dd><p>check for validity of block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>block</strong> (<em>Block object</em>) – Block object to be validated</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if valid, else False</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bioblockchain.blockchain.Blockchain.last_block">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_block</span></span><a class="headerlink" href="#bioblockchain.blockchain.Blockchain.last_block" title="Permalink to this definition"></a></dt>
+<dd><p>last_block property containing last block in the blockchain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>latest block object appended to the blockchain</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Block object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.blockchain.Blockchain.search_by_process">
+<span class="sig-name descname"><span class="pre">search_by_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">process_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/blockchain.html#Blockchain.search_by_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.blockchain.Blockchain.search_by_process" title="Permalink to this definition"></a></dt>
+<dd><p>search_by_process looks for block containing transaction with given process_id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>process_id</strong> (<em>Str</em>) – string representation of the searched process_id</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>found Block or None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bioblockchain.block.Block" title="bioblockchain.block.Block">Block</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.config">
+<span id="bioblockchain-config-module"></span><h2>bioblockchain.config module<a class="headerlink" href="#module-bioblockchain.config" title="Permalink to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="bioblockchain.config.MAX_FAULT">
+<span class="sig-prename descclassname"><span class="pre">bioblockchain.config.</span></span><span class="sig-name descname"><span class="pre">MAX_FAULT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#bioblockchain.config.MAX_FAULT" title="Permalink to this definition"></a></dt>
+<dd><p>maximum number of faulty nodes</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="bioblockchain.config.MIN_WEIGHT_COMMIT">
+<span class="sig-prename descclassname"><span class="pre">bioblockchain.config.</span></span><span class="sig-name descname"><span class="pre">MIN_WEIGHT_COMMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.6666666666666666</span></em><a class="headerlink" href="#bioblockchain.config.MIN_WEIGHT_COMMIT" title="Permalink to this definition"></a></dt>
+<dd><p>minimum weight of commits needed to enter reply phase</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="bioblockchain.config.MIN_WEIGHT_PREPARE">
+<span class="sig-prename descclassname"><span class="pre">bioblockchain.config.</span></span><span class="sig-name descname"><span class="pre">MIN_WEIGHT_PREPARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.6666666666666666</span></em><a class="headerlink" href="#bioblockchain.config.MIN_WEIGHT_PREPARE" title="Permalink to this definition"></a></dt>
+<dd><p>minimum weight of prepares needed to enter commit phase</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="bioblockchain.config.MIN_WEIGHT_REPLY">
+<span class="sig-prename descclassname"><span class="pre">bioblockchain.config.</span></span><span class="sig-name descname"><span class="pre">MIN_WEIGHT_REPLY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.6666666666666666</span></em><a class="headerlink" href="#bioblockchain.config.MIN_WEIGHT_REPLY" title="Permalink to this definition"></a></dt>
+<dd><p>minimum weight of replies needed to respond to the request</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="bioblockchain.config.NUM_PARTICIPATING_NODES">
+<span class="sig-prename descclassname"><span class="pre">bioblockchain.config.</span></span><span class="sig-name descname"><span class="pre">NUM_PARTICIPATING_NODES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#bioblockchain.config.NUM_PARTICIPATING_NODES" title="Permalink to this definition"></a></dt>
+<dd><p>total count of replicas participating in the PBFT network</p>
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.main">
+<span id="bioblockchain-main-module"></span><h2>bioblockchain.main module<a class="headerlink" href="#module-bioblockchain.main" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="bioblockchain.main.query_yes_no">
+<span class="sig-prename descclassname"><span class="pre">bioblockchain.main.</span></span><span class="sig-name descname"><span class="pre">query_yes_no</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">question</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'yes'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/main.html#query_yes_no"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.main.query_yes_no" title="Permalink to this definition"></a></dt>
+<dd><p>query_yes_no Ask a yes/no question via and returns the answer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>question</strong> (<em>Str</em>) – question asked to the user</p></li>
+<li><p><strong>default</strong> (<em>Str</em><em>, </em><em>optional</em>) – Default answear when the entered answear is blank. Defaults to “yes”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Depending on the answer returns True for “yes” or False for “no”.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bioblockchain.main.run">
+<span class="sig-prename descclassname"><span class="pre">bioblockchain.main.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/main.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.main.run" title="Permalink to this definition"></a></dt>
+<dd><p>run is a main script running the bioblockchain demonstrator</p>
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.message">
+<span id="bioblockchain-message-module"></span><h2>bioblockchain.message module<a class="headerlink" href="#module-bioblockchain.message" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.message.Message">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.message.</span></span><span class="sig-name descname"><span class="pre">Message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ttype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/message.html#Message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.message.Message" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Object passed between nodes in peer-to-peer communication</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.message.Message.toJSON">
+<span class="sig-name descname"><span class="pre">toJSON</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/message.html#Message.toJSON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.message.Message.toJSON" title="Permalink to this definition"></a></dt>
+<dd><p>toJSON handles custom object to json conversion</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>json/dict object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.message.Message.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/message.html#Message.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.message.Message.verify" title="Permalink to this definition"></a></dt>
+<dd><p>verifies message</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if valid, else False</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.message.PBFT_Message">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.message.</span></span><span class="sig-name descname"><span class="pre">PBFT_Message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/message.html#PBFT_Message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.message.PBFT_Message" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>PBFT message types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str</strong> (<em>str</em>) – string representation</p></li>
+<li><p><strong>Enum</strong> (<em>Enum</em>) – Enum inheritance</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.message.PBFT_Message.COMMIT">
+<span class="sig-name descname"><span class="pre">COMMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'COMMIT'</span></em><a class="headerlink" href="#bioblockchain.message.PBFT_Message.COMMIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.message.PBFT_Message.PREPARE">
+<span class="sig-name descname"><span class="pre">PREPARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PREPARE'</span></em><a class="headerlink" href="#bioblockchain.message.PBFT_Message.PREPARE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.message.PBFT_Message.PRE_PREPARE">
+<span class="sig-name descname"><span class="pre">PRE_PREPARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PRE_PREPARE'</span></em><a class="headerlink" href="#bioblockchain.message.PBFT_Message.PRE_PREPARE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.message.PBFT_Message.REPLY">
+<span class="sig-name descname"><span class="pre">REPLY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'REPLY'</span></em><a class="headerlink" href="#bioblockchain.message.PBFT_Message.REPLY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.message.PBFT_Message.REQUEST">
+<span class="sig-name descname"><span class="pre">REQUEST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'REQUEST'</span></em><a class="headerlink" href="#bioblockchain.message.PBFT_Message.REQUEST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.message.PBFT_Message.ROUND_CHANGE">
+<span class="sig-name descname"><span class="pre">ROUND_CHANGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ROUND_CHANGE'</span></em><a class="headerlink" href="#bioblockchain.message.PBFT_Message.ROUND_CHANGE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="bioblockchain-message-log-module">
+<h2>bioblockchain.message_log module<a class="headerlink" href="#bioblockchain-message-log-module" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-bioblockchain.message_log"></span><dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.message_log.MessageLogged">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.message_log.</span></span><span class="sig-name descname"><span class="pre">MessageLogged</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/message_log.html#MessageLogged"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.message_log.MessageLogged" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Single log stored in a node for given message</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.message_log.MessageLogged.update_nums">
+<span class="sig-name descname"><span class="pre">update_nums</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/message_log.html#MessageLogged.update_nums"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.message_log.MessageLogged.update_nums" title="Permalink to this definition"></a></dt>
+<dd><p>update_nums updates view and sequence number of PBFT protocol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>view_num</strong> (<em>Int</em>) – current view number</p></li>
+<li><p><strong>seq_num</strong> (<em>Int</em>) – current sequence number</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.node">
+<span id="bioblockchain-node-module"></span><h2>bioblockchain.node module<a class="headerlink" href="#module-bioblockchain.node" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.node.Biometric_Processes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.node.</span></span><span class="sig-name descname"><span class="pre">Biometric_Processes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Biometric_Processes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Biometric_Processes" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>processes in biometric systems</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str</strong> (<em>str</em>) – string representation</p></li>
+<li><p><strong>(</strong><strong>)</strong> (<em>Enum</em>) – Enum inheritance</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.node.Biometric_Processes.ENROLLMENT">
+<span class="sig-name descname"><span class="pre">ENROLLMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'enrollment'</span></em><a class="headerlink" href="#bioblockchain.node.Biometric_Processes.ENROLLMENT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.node.Biometric_Processes.IDENTIFICATION">
+<span class="sig-name descname"><span class="pre">IDENTIFICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'identification'</span></em><a class="headerlink" href="#bioblockchain.node.Biometric_Processes.IDENTIFICATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bioblockchain.node.Biometric_Processes.VERIFICATION">
+<span class="sig-name descname"><span class="pre">VERIFICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'verification'</span></em><a class="headerlink" href="#bioblockchain.node.Biometric_Processes.VERIFICATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.node.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blockchain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>single node participating in the peer-2-peer network</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.add_block_to_blockchain">
+<span class="sig-name descname"><span class="pre">add_block_to_blockchain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.add_block_to_blockchain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.add_block_to_blockchain" title="Permalink to this definition"></a></dt>
+<dd><p>add_block_to_blockchain given node adds block to blockchain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>block</strong> (<a class="reference internal" href="#bioblockchain.block.Block" title="bioblockchain.block.Block"><em>Block</em></a>) – block to be added to blockchain</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.add_request_to_log">
+<span class="sig-name descname"><span class="pre">add_request_to_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.add_request_to_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.add_request_to_log" title="Permalink to this definition"></a></dt>
+<dd><p>store a newly received request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>Message Object</em>) – request message object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>hash representation of found message</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.add_transaction">
+<span class="sig-name descname"><span class="pre">add_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.add_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.add_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>add transaction to the queue waiting for block proposal</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transaction</strong> (<a class="reference internal" href="#bioblockchain.transaction.Transaction" title="bioblockchain.transaction.Transaction"><em>Transaction</em></a>) – processed transaction ready to be stored in blockchain</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.claimed_identity_in_database">
+<span class="sig-name descname"><span class="pre">claimed_identity_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">claimed_identity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.claimed_identity_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.claimed_identity_in_database" title="Permalink to this definition"></a></dt>
+<dd><p>claimed_identity_in_database method validates if given feature is stored in the template database in form of claimed identity(1:1 search)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<em>Str</em>) – string representation of acquired features</p></li>
+<li><p><strong>claimed_identity</strong> (<em>str</em>) – string representation of the claimed identity</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>string representation of found user’s key/identifier or None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.compare_features">
+<span class="sig-name descname"><span class="pre">compare_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.compare_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.compare_features" title="Permalink to this definition"></a></dt>
+<dd><p>naive comparison of features</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features1</strong> (<em>str</em>) – first features</p></li>
+<li><p><strong>features2</strong> (<em>str</em>) – second features</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if they are similar</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.corresponding_view_seq">
+<span class="sig-name descname"><span class="pre">corresponding_view_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.corresponding_view_seq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.corresponding_view_seq" title="Permalink to this definition"></a></dt>
+<dd><p>corresponding_view_seq check for valid sequence and view number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>view</strong> (<em>int</em>) – current view number of pbft</p></li>
+<li><p><strong>seq</strong> (<em>int</em>) – current sequence number of pbft</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.create_block">
+<span class="sig-name descname"><span class="pre">create_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.create_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.create_block" title="Permalink to this definition"></a></dt>
+<dd><p>create_block creation of a new block with given transaction proposed by this node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transaction</strong> (<em>Transaction object</em>) – transaction to be added to the block</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>created block object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bioblockchain.block.Block" title="bioblockchain.block.Block">Block</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.execute_operation">
+<span class="sig-name descname"><span class="pre">execute_operation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.execute_operation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.execute_operation" title="Permalink to this definition"></a></dt>
+<dd><p>execute_operation after receiving enough replies the primary node performs this operation in this method according to the vote result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>log</strong> (<em>MessageLogged object</em>) – message log for given request for which the primary received enough replies</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.extract">
+<span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compromised</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.extract" title="Permalink to this definition"></a></dt>
+<dd><p>naive way of extracting features from biometric data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Str</em>) – biometric data</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>string representation of extracted features</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.feature_extractor">
+<span class="sig-name descname"><span class="pre">feature_extractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_sensory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.feature_extractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.feature_extractor" title="Permalink to this definition"></a></dt>
+<dd><p>simulation of feature extraction component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_sensory</strong> (<em>Str</em>) – biometric data acquired from sensor</p></li>
+<li><p><strong>process_type</strong> (<a class="reference internal" href="#bioblockchain.node.Biometric_Processes" title="bioblockchain.node.Biometric_Processes"><em>Biometric_Processes</em></a>) – type of operation executed by the extractor(enrollment/authentication)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>Exception</strong> – repetitive enrollment()</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>json/dict data containing acquired information with timestamps</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.features_in_database">
+<span class="sig-name descname"><span class="pre">features_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.features_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.features_in_database" title="Permalink to this definition"></a></dt>
+<dd><p>features_in_database method searches for a given feature in the whole database of templates(1:M search)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>features</strong> (<em>str</em>) – string representation of feature</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>found key/identifier for given features/user or None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.get_extraction_compromised">
+<span class="sig-name descname"><span class="pre">get_extraction_compromised</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.get_extraction_compromised"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.get_extraction_compromised" title="Permalink to this definition"></a></dt>
+<dd><p>get_extraction_compromised after calling this function the nodes feature extraction module gets compromised</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.get_matching_compromised">
+<span class="sig-name descname"><span class="pre">get_matching_compromised</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.get_matching_compromised"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.get_matching_compromised" title="Permalink to this definition"></a></dt>
+<dd><p>get_extraction_compromised after calling this function the nodes feature extraction module gets compromised</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.get_other_nodes">
+<span class="sig-name descname"><span class="pre">get_other_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.get_other_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.get_other_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>get other nodes from the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>List</em><em>(</em><a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node"><em>Node</em></a><em>)</em>) – list of nodes in the network</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of nodes containing all other nodes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List(<a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node">Node</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.get_sensor_data">
+<span class="sig-name descname"><span class="pre">get_sensor_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.get_sensor_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.get_sensor_data" title="Permalink to this definition"></a></dt>
+<dd><p>naive way of acquiring sensor biometric data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>representation of acquired biometric data</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.matcher">
+<span class="sig-name descname"><span class="pre">matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">claimed_identity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.matcher" title="Permalink to this definition"></a></dt>
+<dd><p>matcher operates as the matcher component that is proposing the operation to the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<em>Str</em>) – representation of extracted features</p></li>
+<li><p><strong>mode</strong> (<em>Str</em>) – mode of operation(either identification or verification)</p></li>
+<li><p><strong>claimed_identity</strong> (<em>Str</em>) – identifier of the claimed identity</p></li>
+<li><p><strong>process_id</strong> (<em>Str</em>) – process identifier for given operation</p></li>
+<li><p><strong>compromised</strong> (<em>Bool</em>) – flag used for compromised node simulation (proposing wrong match result)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary containing all the operational data and outcome of matching</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.received_commit">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">received_commit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_hash</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.received_commit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.received_commit" title="Permalink to this definition"></a></dt>
+<dd><p>update the count of received commits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg_hash</strong> (<em>Str</em>) – hash message representation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>log of message that received prepare message</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>MessageLog</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.received_prepare">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">received_prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_hash</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.received_prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.received_prepare" title="Permalink to this definition"></a></dt>
+<dd><p>update the count of received prepares</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg_hash</strong> (<em>Str</em>) – hash message representation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>log of message that received prepare message</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>MessageLog</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.received_reply">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">received_reply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.received_reply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.received_reply" title="Permalink to this definition"></a></dt>
+<dd><p>update the count of received replies</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg_hash</strong> (<em>Str</em>) – hash message representation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>log of message that received prepare message</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>MessageLog</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.search_log_msg">
+<span class="sig-name descname"><span class="pre">search_log_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.search_log_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.search_log_msg" title="Permalink to this definition"></a></dt>
+<dd><p>search for a given message in node’s backlog</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> (<a class="reference internal" href="#bioblockchain.message.Message" title="bioblockchain.message.Message"><em>Message</em></a>) – searched message</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Message if succesfull search, else None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Message/None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.search_log_msghash">
+<span class="sig-name descname"><span class="pre">search_log_msghash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_hash</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.search_log_msghash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.search_log_msghash" title="Permalink to this definition"></a></dt>
+<dd><p>search message in log of request messages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message_hash</strong> (<em>bytes</em>) – hash representation of searched message</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>message on succesful search of message, else None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Message object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.search_user_in_database">
+<span class="sig-name descname"><span class="pre">search_user_in_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.search_user_in_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.search_user_in_database" title="Permalink to this definition"></a></dt>
+<dd><p>searches for identifier of user in database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user</strong> (<em>Str</em>) – representation of users identification in database</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return found user or None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.set_seq_number">
+<span class="sig-name descname"><span class="pre">set_seq_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message_hash</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.set_seq_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.set_seq_number" title="Permalink to this definition"></a></dt>
+<dd><p>set_seq_number assign next available sequence number to the request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message_hash</strong> (<em>str</em>) – hash of the request message</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>sequence and view number that was assigned to the request</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.store_features">
+<span class="sig-name descname"><span class="pre">store_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.store_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.store_features" title="Permalink to this definition"></a></dt>
+<dd><p>store features in template storage</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>features</strong> (<em>Str</em>) – string features to be stored</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.verify_block">
+<span class="sig-name descname"><span class="pre">verify_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.verify_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.verify_block" title="Permalink to this definition"></a></dt>
+<dd><p>verify_block node verifies validity of proposen block</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>block</strong> (<a class="reference internal" href="#bioblockchain.block.Block" title="bioblockchain.block.Block"><em>Block</em></a>) – proposed block</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>is the block valid or not</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.node.Node.verify_decision">
+<span class="sig-name descname"><span class="pre">verify_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biometrics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/node.html#Node.verify_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.node.Node.verify_decision" title="Permalink to this definition"></a></dt>
+<dd><p>verifies the transaction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transaction</strong> (<a class="reference internal" href="#bioblockchain.transaction.Transaction" title="bioblockchain.transaction.Transaction"><em>Transaction</em></a>) – verifies the operation outcome of given transaction</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If the result of the operation is validated returns None, otherwise returns the different found result</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.parser">
+<span id="bioblockchain-parser-module"></span><h2>bioblockchain.parser module<a class="headerlink" href="#module-bioblockchain.parser" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.parser.MyParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.parser.</span></span><span class="sig-name descname"><span class="pre">MyParser</span></span><a class="reference internal" href="_modules/bioblockchain/parser.html#MyParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.parser.MyParser" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>argument parser</p>
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.pbft">
+<span id="bioblockchain-pbft-module"></span><h2>bioblockchain.pbft module<a class="headerlink" href="#module-bioblockchain.pbft" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.pbft.</span></span><span class="sig-name descname"><span class="pre">PBFT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>PBFT protocol communication</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.async_range">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.async_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.async_range" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.broadcast_commit">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">broadcast_commit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.broadcast_commit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.broadcast_commit" title="Permalink to this definition"></a></dt>
+<dd><p>brodcasts commit to all nodes in the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content</strong> (<em>Dict</em><em>, </em><em>optional</em>) – json data neccesary for commit message(msg_hash/seq_no/view). Defaults to None.</p></li>
+<li><p><strong>from_node</strong> (<a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node"><em>Node</em></a><em>, </em><em>optional</em>) – node object sending the commit message. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.broadcast_pre_prepare">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">broadcast_pre_prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.broadcast_pre_prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.broadcast_pre_prepare" title="Permalink to this definition"></a></dt>
+<dd><p>brodcasts pre_prepare to all nodes in the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content</strong> (<em>Dict</em><em>, </em><em>optional</em>) – json data neccesary for pre_prepare message(msg_hash/seq_no/view). Defaults to None.</p></li>
+<li><p><strong>from_node</strong> (<a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node"><em>Node</em></a><em>, </em><em>optional</em>) – node object sending the pre_prepare message. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.broadcast_prepare">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">broadcast_prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.broadcast_prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.broadcast_prepare" title="Permalink to this definition"></a></dt>
+<dd><p>brodcasts prepare to all nodes in the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content</strong> (<em>Dict</em><em>, </em><em>optional</em>) – json data neccesary for prepare message(msg_hash/seq_no/view). Defaults to None.</p></li>
+<li><p><strong>from_node</strong> (<a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node"><em>Node</em></a><em>, </em><em>optional</em>) – node object sending the prepare message. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.broadcast_request">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">broadcast_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.broadcast_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.broadcast_request" title="Permalink to this definition"></a></dt>
+<dd><p>brodcasts new request to all nodes in the network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content</strong> (<a class="reference internal" href="#bioblockchain.transaction.Transaction" title="bioblockchain.transaction.Transaction"><em>Transaction</em></a><em>, </em><a class="reference internal" href="#bioblockchain.block.Block" title="bioblockchain.block.Block"><em>Block</em></a>) – data sent to network in request</p></li>
+<li><p><strong>user</strong> (<a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node"><em>Node</em></a>) – Node who sent the message</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.broadcast_round_change">
+<span class="sig-name descname"><span class="pre">broadcast_round_change</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.broadcast_round_change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.broadcast_round_change" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.get_leader">
+<span class="sig-name descname"><span class="pre">get_leader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.get_leader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.get_leader" title="Permalink to this definition"></a></dt>
+<dd><p>returns current leader</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Node object with current leader</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node">Node</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.is_leader">
+<span class="sig-name descname"><span class="pre">is_leader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.is_leader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.is_leader" title="Permalink to this definition"></a></dt>
+<dd><p>is_leader checks if given node is current leader</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>Node object</em>) – tested node</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True when is primary, otherwise False</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.is_verified_node">
+<span class="sig-name descname"><span class="pre">is_verified_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.is_verified_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.is_verified_node" title="Permalink to this definition"></a></dt>
+<dd><p>is_verified_node verifies if given Node is verified</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>Node object</em>) – tested node</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True when is verified, otherwise False</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.message_handler">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">message_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recipient</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.message_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.message_handler" title="Permalink to this definition"></a></dt>
+<dd><p>message execution manager function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>Message object</em>) – message object being handled by the PBFT protocol</p></li>
+<li><p><strong>recipient</strong> (<em>Node object</em>) – adressee of the message being handled</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.validate_block">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.validate_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.validate_block" title="Permalink to this definition"></a></dt>
+<dd><p>interface of the pbft protocol where the Block is proposed to be validated in PBFT</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block</strong> (<a class="reference internal" href="#bioblockchain.block.Block" title="bioblockchain.block.Block"><em>Block</em></a>) – proposed Block</p></li>
+<li><p><strong>user</strong> (<a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node"><em>Node</em></a>) – entry Node proposing the block</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.pbft.PBFT.validate_decision">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaction_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biometric_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/pbft.html#PBFT.validate_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.pbft.PBFT.validate_decision" title="Permalink to this definition"></a></dt>
+<dd><p>interface of the pbft protocol where the Transaction is made for given operation and broadcasts request to validate decision/operation to PBFT</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Dict</em>) – json/dict data of executed operation to get validated</p></li>
+<li><p><strong>user</strong> (<a class="reference internal" href="#bioblockchain.node.Node" title="bioblockchain.node.Node"><em>Node</em></a>) – entry Node executing the operation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>result of the validation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.chain_utils">
+<span id="bioblockchain-chain-utils-module"></span><h2>bioblockchain.chain_utils module<a class="headerlink" href="#module-bioblockchain.chain_utils" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.chain_utils.ChainUtils">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.chain_utils.</span></span><span class="sig-name descname"><span class="pre">ChainUtils</span></span><a class="reference internal" href="_modules/bioblockchain/chain_utils.html#ChainUtils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.chain_utils.ChainUtils" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ChainUtils contains static methods for cryptographic operations and operations with blockchain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised when passed arguments to verify_signature are of wrong type</p></li>
+<li><p><strong>BadSignatureError</strong> – Raised in verify_signature when the signature is wrong</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.chain_utils.ChainUtils.generate_key_from_seed">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_key_from_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/chain_utils.html#ChainUtils.generate_key_from_seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.chain_utils.ChainUtils.generate_key_from_seed" title="Permalink to this definition"></a></dt>
+<dd><p>generate_key_from_seed generates private key from secret phrase</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seed</strong> (<em>string</em>) – secret phrase</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>private key generated from <cite>seed</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>SigningKey</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.chain_utils.ChainUtils.hash">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_to_hash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/chain_utils.html#ChainUtils.hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.chain_utils.ChainUtils.hash" title="Permalink to this definition"></a></dt>
+<dd><p>hash calculates hash from string with sha256 hashing function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string_to_hash</strong> (<em>str</em><em> | </em><em>dict</em>) – string/dict to be hashed</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>object representing calculated hash from given <cite>string_to_hash</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>_Hash object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.chain_utils.ChainUtils.id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/chain_utils.html#ChainUtils.id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.chain_utils.ChainUtils.id" title="Permalink to this definition"></a></dt>
+<dd><p>generates UUID(universally unique identifier)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>generated UUID</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>String</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.chain_utils.ChainUtils.string_from_verifkey">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">string_from_verifkey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verifying_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/chain_utils.html#ChainUtils.string_from_verifkey"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.chain_utils.ChainUtils.string_from_verifkey" title="Permalink to this definition"></a></dt>
+<dd><p>string_from_verifkey turns bytes like public key, to its string representation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>verifying_key</strong> (<em>[</em><em>Bytes</em><em>]</em>) – [public key]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>public key’s string representation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>String</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.chain_utils.ChainUtils.transactionlist_to_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transactionlist_to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tx_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/chain_utils.html#ChainUtils.transactionlist_to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.chain_utils.ChainUtils.transactionlist_to_json" title="Permalink to this definition"></a></dt>
+<dd><p>transactionlist_to_json converts Transaction objects to list of dictionaries(json)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tx_list</strong> (<em>List</em><em> or </em><a class="reference internal" href="#bioblockchain.transaction.Transaction" title="bioblockchain.transaction.Transaction"><em>Transaction</em></a>) – list of transactions or single Transaction</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of dictionaries</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.chain_utils.ChainUtils.verify_signature">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verify_signature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">public_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/chain_utils.html#ChainUtils.verify_signature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.chain_utils.ChainUtils.verify_signature" title="Permalink to this definition"></a></dt>
+<dd><p>verify_signature verifies validity of signature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>public_key</strong> (<em>VerifyingKey</em>) – public key associated with <cite>signature</cite></p></li>
+<li><p><strong>signature</strong> (<em>Bytes</em>) – encoded signature over <cite>data</cite></p></li>
+<li><p><strong>data</strong> (<em>String</em>) – data which was used for signature calculation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True when the signature is valid, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.transaction">
+<span id="bioblockchain-transaction-module"></span><h2>bioblockchain.transaction module<a class="headerlink" href="#module-bioblockchain.transaction" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.transaction.Transaction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.transaction.</span></span><span class="sig-name descname"><span class="pre">Transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/transaction.html#Transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.transaction.Transaction" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Transaction class is holding certain data with accompanying info needed for it’s verification</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.transaction.Transaction.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/transaction.html#Transaction.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.transaction.Transaction.get_data" title="Permalink to this definition"></a></dt>
+<dd><p>get_data returns data contained in Transaction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dictionary with data</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bioblockchain.transaction.Transaction.hash_hexdigest">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hash_hexdigest</span></span><a class="headerlink" href="#bioblockchain.transaction.Transaction.hash_hexdigest" title="Permalink to this definition"></a></dt>
+<dd><p>hash_hexdigest is a property value of Transaction’s hash in it’s string representation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Hash representation of string</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.transaction.Transaction.toJSON">
+<span class="sig-name descname"><span class="pre">toJSON</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/transaction.html#Transaction.toJSON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.transaction.Transaction.toJSON" title="Permalink to this definition"></a></dt>
+<dd><p>transforms class variables into json/dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dictionary from this transaction</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.transaction.Transaction.update_transaction">
+<span class="sig-name descname"><span class="pre">update_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/transaction.html#Transaction.update_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.transaction.Transaction.update_transaction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.transaction.Transaction.verify_transaction">
+<span class="sig-name descname"><span class="pre">verify_transaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/transaction.html#Transaction.verify_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.transaction.Transaction.verify_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>verify_transaction verifies wether the transaction is valid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transaction</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[type]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="bioblockchain-time-utils-module">
+<h2>bioblockchain.time_utils module<a class="headerlink" href="#bioblockchain-time-utils-module" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-bioblockchain.time_utils"></span><dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.time_utils.TimeUtils">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.time_utils.</span></span><span class="sig-name descname"><span class="pre">TimeUtils</span></span><a class="reference internal" href="_modules/bioblockchain/time_utils.html#TimeUtils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.time_utils.TimeUtils" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TimeUtils contains static methods for time operations</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.time_utils.TimeUtils.my_date">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">my_date</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/time_utils.html#TimeUtils.my_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.time_utils.TimeUtils.my_date" title="Permalink to this definition"></a></dt>
+<dd><p>my_date returns current date in given format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>_description_</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain.wallet">
+<span id="bioblockchain-wallet-module"></span><h2>bioblockchain.wallet module<a class="headerlink" href="#module-bioblockchain.wallet" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bioblockchain.wallet.Wallet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bioblockchain.wallet.</span></span><span class="sig-name descname"><span class="pre">Wallet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">secret</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/wallet.html#Wallet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.wallet.Wallet" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The wallet holds the public key and key pair.
+It is also responsible for signing data hashes and creating signed transactions, messages…</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.wallet.Wallet.create_transaction">
+<span class="sig-name descname"><span class="pre">create_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/wallet.html#Wallet.create_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.wallet.Wallet.create_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>creates transaction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Dict</em>) – transaction payload</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[object representing transaction]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(Transaction object)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bioblockchain.wallet.Wallet.private_key">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">private_key</span></span><a class="headerlink" href="#bioblockchain.wallet.Wallet.private_key" title="Permalink to this definition"></a></dt>
+<dd><p>private_key property contains private or SigningKey property</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>private key of given wallet</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>SigningKey</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bioblockchain.wallet.Wallet.sign">
+<span class="sig-name descname"><span class="pre">sign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioblockchain/wallet.html#Wallet.sign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bioblockchain.wallet.Wallet.sign" title="Permalink to this definition"></a></dt>
+<dd><p>calculates signature over given data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Dict</em><em>|</em><em>String</em><em>|</em><em>Bytes</em>) – [data to be signed]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Passed unexpected argument type</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>encoded signature over <cite>data</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(String)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bioblockchain.wallet.Wallet.verif_key">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verif_key</span></span><a class="headerlink" href="#bioblockchain.wallet.Wallet.verif_key" title="Permalink to this definition"></a></dt>
+<dd><p>verif_key property contains public or VerifyingKey property</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>public key of given wallet</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>VerifyingKey</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bioblockchain">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bioblockchain" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Bioblockchain’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Marek Ziska.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

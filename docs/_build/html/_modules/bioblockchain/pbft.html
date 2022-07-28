@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bioblockchain.pbft &mdash; Bioblockchain 2022.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Bioblockchain
+          </a>
+              <div class="version">
+                2022.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../bioblockchain.html">bioblockchain</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Bioblockchain</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>bioblockchain.pbft</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bioblockchain.pbft</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">bioblockchain.transaction</span> <span class="kn">import</span> <span class="n">Transaction</span>
+<span class="kn">from</span> <span class="nn">bioblockchain.block</span> <span class="kn">import</span> <span class="n">Block</span>
+<span class="kn">import</span> <span class="nn">bioblockchain.config</span> <span class="k">as</span> <span class="nn">config</span>
+<span class="kn">from</span> <span class="nn">bioblockchain.message</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">PBFT_Message</span>
+<span class="kn">from</span> <span class="nn">colorama</span> <span class="kn">import</span> <span class="n">Fore</span><span class="p">,</span> <span class="n">Style</span><span class="p">,</span> <span class="n">Back</span>
+
+
+<div class="viewcode-block" id="PBFT"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT">[docs]</a><span class="k">class</span> <span class="nc">PBFT</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;PBFT protocol communication</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbosity</span>
+        <span class="c1"># primary node for now hardly set TODO - changing views with primary nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">primary_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_leader</span><span class="p">()</span>
+        <span class="c1"># long repeating list of nodes for round robin, async generator might be needed in future versions</span>
+        <span class="c1"># self.iter_nodes = self.nodes * config.ITER_LIST_AMMOUNT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iter_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">participating_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="PBFT.get_leader"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.get_leader">[docs]</a>    <span class="k">def</span> <span class="nf">get_leader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns current leader</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Node: Node object with current leader</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">%</span> <span class="n">config</span><span class="o">.</span><span class="n">NUM_PARTICIPATING_NODES</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PBFT.async_range"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.async_range">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+            <span class="k">yield</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    async def round_robin(self):</span>
+<span class="sd">        self.participating_nodes.clear()</span>
+<span class="sd">        for x in range(config.NUM_PARTICIPATING_NODES - 1):</span>
+<span class="sd">            if self.iter_index == config.ITER_LIST_AMMOUNT:</span>
+<span class="sd">                self.iter_index = 0</span>
+<span class="sd">            if self.primary_node != self.iter_nodes[self.iter_index]:</span>
+<span class="sd">                self.participating_nodes.append(</span>
+<span class="sd">                    self.iter_nodes[self.iter_index])</span>
+<span class="sd">            else:</span>
+<span class="sd">                self.iter_index += 1</span>
+<span class="sd">                self.participating_nodes.append(</span>
+<span class="sd">                    self.iter_nodes[self.iter_index])</span>
+<span class="sd">            self.iter_index += 1</span>
+<span class="sd">        self.participating_nodes.append(self.primary_node)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PBFT.validate_decision"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.validate_decision">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">validate_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction_data</span><span class="p">,</span> <span class="n">biometric_data</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;interface of the pbft protocol where the Transaction is made for given operation and broadcasts request to validate decision/operation to PBFT </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Dict): json/dict data of executed operation to get validated </span>
+<span class="sd">            user (Node): entry Node executing the operation</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Bool: result of the validation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">transaction</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">(</span><span class="n">transaction_data</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">wallet</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;consensus_object&quot;</span><span class="p">:</span> <span class="n">transaction</span><span class="p">,</span>
+                   <span class="s2">&quot;biometrics&quot;</span><span class="p">:</span> <span class="n">biometric_data</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">transaction_data</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;- Creating new request for </span><span class="si">{</span><span class="n">transaction_data</span><span class="p">[</span><span class="s2">&quot;operation&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2"> validation of SUCCESS </span><span class="si">{</span><span class="n">transaction_data</span><span class="p">[</span><span class="s2">&quot;process_type&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">!&quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;- Creating new request for </span><span class="si">{</span><span class="n">transaction_data</span><span class="p">[</span><span class="s2">&quot;operation&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2"> validation of FAILED </span><span class="si">{</span><span class="n">transaction_data</span><span class="p">[</span><span class="s2">&quot;process_type&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">!&quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_request</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span></div>
+
+    <span class="c1"># broadcasts transactions</span>
+<div class="viewcode-block" id="PBFT.validate_block"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.validate_block">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">validate_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;interface of the pbft protocol where the Block is proposed to be validated in PBFT </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block (Block): proposed Block </span>
+<span class="sd">            user (Node): entry Node proposing the block</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;consensus_object&quot;</span><span class="p">:</span> <span class="n">block</span><span class="p">,</span> <span class="s2">&quot;biometrics&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;- Creating new validation request for new block proposal!&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_request</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PBFT.broadcast_request"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.broadcast_request">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">broadcast_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">from_node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;brodcasts new request to all nodes in the network</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content (Transaction, Block): data sent to network in request</span>
+<span class="sd">            user (Node): Node who sent the message</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">BLUE</span> <span class="o">+</span> <span class="s2">&quot;PBFT START&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">)</span>
+        <span class="c1"># await self.round_robin()</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_handler</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="n">PBFT_Message</span><span class="o">.</span><span class="n">REQUEST</span><span class="p">,</span> <span class="n">from_node</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PBFT.broadcast_pre_prepare"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.broadcast_pre_prepare">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">broadcast_pre_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;brodcasts pre_prepare to all nodes in the network</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content (Dict, optional): json data neccesary for pre_prepare message(msg_hash/seq_no/view). Defaults to None.</span>
+<span class="sd">            from_node (Node, optional): node object sending the pre_prepare message. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="n">others</span> <span class="o">=</span> <span class="n">from_node</span><span class="o">.</span><span class="n">get_other_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_handler</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="n">PBFT_Message</span><span class="o">.</span><span class="n">PRE_PREPARE</span><span class="p">,</span> <span class="n">from_node</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">others</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PBFT.broadcast_prepare"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.broadcast_prepare">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">broadcast_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;brodcasts prepare to all nodes in the network</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            content (Dict, optional): json data neccesary for prepare message(msg_hash/seq_no/view). Defaults to None.</span>
+<span class="sd">            from_node (Node, optional): node object sending the prepare message. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="n">others</span> <span class="o">=</span> <span class="n">from_node</span><span class="o">.</span><span class="n">get_other_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_handler</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="n">PBFT_Message</span><span class="o">.</span><span class="n">PREPARE</span><span class="p">,</span> <span class="n">from_node</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">others</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PBFT.broadcast_commit"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.broadcast_commit">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">broadcast_commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;brodcasts commit to all nodes in the network</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            content (Dict, optional): json data neccesary for commit message(msg_hash/seq_no/view). Defaults to None.</span>
+<span class="sd">            from_node (Node, optional): node object sending the commit message. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="n">others</span> <span class="o">=</span> <span class="n">from_node</span><span class="o">.</span><span class="n">get_other_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_handler</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="n">PBFT_Message</span><span class="o">.</span><span class="n">COMMIT</span><span class="p">,</span> <span class="n">from_node</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">others</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PBFT.broadcast_round_change"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.broadcast_round_change">[docs]</a>    <span class="k">def</span> <span class="nf">broadcast_round_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO unfinished round changing - primary</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;********************ROUND-CHANGE********************&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">validator</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message_handler</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Validator</span><span class="si">{</span><span class="n">validator</span><span class="si">}</span><span class="s2"> received ROUND-CHANGE message&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PBFT.is_verified_node"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.is_verified_node">[docs]</a>    <span class="k">def</span> <span class="nf">is_verified_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        is_verified_node verifies if given Node is verified</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (Node object): tested node</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Bool: True when is verified, otherwise False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="PBFT.is_leader"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.is_leader">[docs]</a>    <span class="k">def</span> <span class="nf">is_leader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        is_leader checks if given node is current leader</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (Node object): tested node</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Bool: True when is primary, otherwise False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_node</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="PBFT.message_handler"><a class="viewcode-back" href="../../bioblockchain.html#bioblockchain.pbft.PBFT.message_handler">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">message_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">recipient</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;message execution manager function</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (Message object): message object being handled by the PBFT protocol</span>
+<span class="sd">            recipient (Node object): adressee of the message being handled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check if the message is correct</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">verify</span><span class="p">():</span>
+            <span class="k">raise</span><span class="p">(</span><span class="s2">&quot;Unsuccesful verification of the sent message!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># only verified nodes can participate</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verified_node</span><span class="p">(</span><span class="n">recipient</span><span class="p">):</span>
+            <span class="k">raise</span><span class="p">(</span><span class="s2">&quot;Unsuccesful verification of receiving node!&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">ttype</span> <span class="o">==</span> <span class="n">PBFT_Message</span><span class="o">.</span><span class="n">REQUEST</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leader</span><span class="p">(</span><span class="n">recipient</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span> <span class="o">+</span> <span class="n">Back</span><span class="o">.</span><span class="n">WHITE</span> <span class="o">+</span>
+                          <span class="sa">f</span><span class="s1">&#39;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> (INIT) </span><span class="se">\t\t</span><span class="s1"> received message(</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">ttype</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> (INIT) </span><span class="se">\t\t</span><span class="s1"> received message(</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">ttype</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+            <span class="c1"># PBFT is going to validate Transaction or new Block</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;consensus_object&quot;</span><span class="p">],</span> <span class="n">Transaction</span><span class="p">):</span>
+                <span class="n">transaction</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;consensus_object&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">transaction</span><span class="o">.</span><span class="n">verify_transaction</span><span class="p">():</span>
+                    <span class="n">msg_hash</span> <span class="o">=</span> <span class="n">recipient</span><span class="o">.</span><span class="n">add_request_to_log</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="c1"># only current leader can start new round by broadcasting pre prepare</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leader</span><span class="p">(</span><span class="n">recipient</span><span class="p">):</span>
+                        <span class="n">view</span><span class="p">,</span> <span class="n">seq</span> <span class="o">=</span> <span class="n">recipient</span><span class="o">.</span><span class="n">set_seq_number</span><span class="p">(</span><span class="n">msg_hash</span><span class="p">)</span>
+                        <span class="n">content</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;msg_hash&quot;</span><span class="p">:</span> <span class="n">msg_hash</span><span class="p">,</span>
+                                   <span class="s2">&quot;seq&quot;</span><span class="p">:</span> <span class="n">seq</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">:</span> <span class="n">view</span><span class="p">}</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_pre_prepare</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">recipient</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">BLUE</span> <span class="o">+</span> <span class="s2">&quot;PBFT END&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">+</span>
+                              <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">)</span>
+                        <span class="n">proposed_block</span> <span class="o">=</span> <span class="n">recipient</span><span class="o">.</span><span class="n">create_block</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_block</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">proposed_block</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">recipient</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span><span class="p">(</span><span class="s2">&quot;Unsuccesful verification of sent transaction!&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;consensus_object&quot;</span><span class="p">],</span> <span class="n">Block</span><span class="p">):</span>
+                <span class="n">block</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;consensus_object&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">verify_block</span><span class="p">():</span>
+                    <span class="n">msg_hash</span> <span class="o">=</span> <span class="n">recipient</span><span class="o">.</span><span class="n">add_request_to_log</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="c1"># only current leader can start new round by broadcasting pre prepare</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leader</span><span class="p">(</span><span class="n">recipient</span><span class="p">):</span>
+                        <span class="n">view</span><span class="p">,</span> <span class="n">seq</span> <span class="o">=</span> <span class="n">recipient</span><span class="o">.</span><span class="n">set_seq_number</span><span class="p">(</span><span class="n">msg_hash</span><span class="p">)</span>
+                        <span class="n">content</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;msg_hash&quot;</span><span class="p">:</span> <span class="n">msg_hash</span><span class="p">,</span>
+                                   <span class="s2">&quot;seq&quot;</span><span class="p">:</span> <span class="n">seq</span><span class="p">,</span> <span class="s2">&quot;view&quot;</span><span class="p">:</span> <span class="n">view</span><span class="p">}</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_pre_prepare</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">recipient</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">BLUE</span> <span class="o">+</span> <span class="s2">&quot;PBFT END&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">+</span>
+                              <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">ttype</span> <span class="o">==</span> <span class="n">PBFT_Message</span><span class="o">.</span><span class="n">PRE_PREPARE</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> (PRE-PREPARING)</span><span class="se">\t</span><span class="s1"> received message(</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">ttype</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+            <span class="n">msg_hash</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;msg_hash&quot;</span><span class="p">]</span>
+            <span class="n">seq</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;seq&quot;</span><span class="p">]</span>
+            <span class="n">view</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;view&quot;</span><span class="p">]</span>
+            <span class="n">log</span> <span class="o">=</span> <span class="n">recipient</span><span class="o">.</span><span class="n">search_log_msghash</span><span class="p">(</span><span class="n">msg_hash</span><span class="p">)</span>
+            <span class="c1"># check for existence of request for receiven message hash from pre_prepare message</span>
+            <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+                <span class="c1"># node accepts pre prepare if there are not any other hash digests for given seq and view</span>
+                <span class="k">if</span> <span class="n">recipient</span><span class="o">.</span><span class="n">corresponding_view_seq</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (PRE-PREPARED) </span><span class="se">\t</span><span class="s2"> sending prepare messages&quot;</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_prepare</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">recipient</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">ttype</span> <span class="o">==</span> <span class="n">PBFT_Message</span><span class="o">.</span><span class="n">PREPARE</span><span class="p">:</span>
+            <span class="n">msg_hash</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;msg_hash&quot;</span><span class="p">]</span>
+            <span class="c1"># received prepares counting</span>
+            <span class="n">log</span> <span class="o">=</span> <span class="k">await</span> <span class="n">recipient</span><span class="o">.</span><span class="n">received_prepare</span><span class="p">(</span><span class="n">msg_hash</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> (PREPARES:</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">prepare_count</span> <span class="o">-</span> <span class="n">recipient</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">-&gt;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">prepare_count</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">)</span><span class="se">\t</span><span class="s1"> received message(</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">ttype</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+            <span class="n">seq</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;seq&quot;</span><span class="p">]</span>
+            <span class="n">view</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;view&quot;</span><span class="p">]</span>
+            <span class="c1"># wait for enough prepare messages</span>
+            <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">prepare_flag</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">log</span><span class="o">.</span><span class="n">commit_sent</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">commit_sent</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (PREPARES:</span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">prepare_count</span><span class="si">}</span><span class="s2">)</span><span class="se">\t\t</span><span class="s2"> sending commit messages&quot;</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast_commit</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">from_node</span><span class="o">=</span><span class="n">recipient</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">ttype</span> <span class="o">==</span> <span class="n">PBFT_Message</span><span class="o">.</span><span class="n">COMMIT</span><span class="p">:</span>
+            <span class="n">msg_hash</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;msg_hash&quot;</span><span class="p">]</span>
+            <span class="c1"># received commits counting</span>
+            <span class="n">log</span> <span class="o">=</span> <span class="k">await</span> <span class="n">recipient</span><span class="o">.</span><span class="n">received_commit</span><span class="p">(</span><span class="n">msg_hash</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> (COMMITS:</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">commit_count</span> <span class="o">-</span> <span class="n">recipient</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">-&gt;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">commit_count</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">)</span><span class="se">\t</span><span class="s1"> received message(</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">ttype</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+            <span class="c1"># wait for enough commit messages, to go to another phase</span>
+            <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">commit_flag</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">log</span><span class="o">.</span><span class="n">reply_sent</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="c1"># validation of proposed block by given peer</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;consensus_object&quot;</span><span class="p">],</span> <span class="n">Block</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">recipient</span><span class="o">.</span><span class="n">verify_block</span><span class="p">(</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;consensus_object&quot;</span><span class="p">])</span>
+                <span class="c1"># execution of the validated operation(feature extraction / matching)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">recipient</span><span class="o">.</span><span class="n">verify_decision</span><span class="p">(</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;consensus_object&quot;</span><span class="p">],</span> <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;biometrics&quot;</span><span class="p">])</span>
+
+                <span class="c1"># diferentiate coloring of the print</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (COMMITS:</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">commit_count</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">)</span><span class="se">\t\t</span><span class="s2"> failed validation!, sending </span><span class="se">\&quot;</span><span class="s2">REPLY</span><span class="se">\&quot;</span><span class="s2"> message!&quot;</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> </span><span class="se">\t\t\t</span><span class="s2"> failed validation!, sending </span><span class="se">\&quot;</span><span class="s2">REPLY</span><span class="se">\&quot;</span><span class="s2"> message!&quot;</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="n">Fore</span><span class="o">.</span><span class="n">LIGHTGREEN_EX</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> (COMMITS:</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">commit_count</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">)</span><span class="se">\t\t</span><span class="s2"> validated!, sending </span><span class="se">\&quot;</span><span class="s2">REPLY</span><span class="se">\&quot;</span><span class="s2"> message!&quot;</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="n">Fore</span><span class="o">.</span><span class="n">LIGHTGREEN_EX</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> </span><span class="se">\t\t\t</span><span class="s2"> validated!, sending </span><span class="se">\&quot;</span><span class="s2">REPLY</span><span class="se">\&quot;</span><span class="s2"> message!&quot;</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span><span class="p">)</span>
+
+                <span class="c1"># transmit new message</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">reply_sent</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;msg_hash&quot;</span><span class="p">],</span> <span class="n">result</span>
+                <span class="n">reply</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">PBFT_Message</span><span class="o">.</span><span class="n">REPLY</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_handler</span><span class="p">(</span><span class="n">reply</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">sender</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">ttype</span> <span class="o">==</span> <span class="n">PBFT_Message</span><span class="o">.</span><span class="n">REPLY</span><span class="p">:</span>
+            <span class="n">msg_hash</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">content</span>
+            <span class="c1"># received replies counting</span>
+            <span class="n">log</span> <span class="o">=</span> <span class="k">await</span> <span class="n">recipient</span><span class="o">.</span><span class="n">received_reply</span><span class="p">(</span><span class="n">msg_hash</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+            <span class="c1"># diferentiate coloring of the print</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> (NEG. REPLIES:</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">reply_count_disagree</span> <span class="o">-</span> <span class="n">recipient</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">-&gt;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">reply_count_disagree</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">)</span><span class="se">\t</span><span class="s1"> received message(</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">ttype</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;- NODE</span><span class="si">{</span><span class="n">recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> (POS. REPLIES:</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">reply_count_agree</span> <span class="o">-</span> <span class="n">recipient</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">-&gt;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">reply_count_agree</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">)</span><span class="se">\t</span><span class="s1"> received message(</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">ttype</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+
+            <span class="c1"># wait for enough reply messages, to go to another phase</span>
+            <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">reply_flag</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">log</span><span class="o">.</span><span class="n">reply_operation_executed</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">LIGHTGREEN_EX</span> <span class="o">+</span>
+                      <span class="s2">&quot;- Enough replies have been received!&quot;</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">)</span>
+                <span class="n">recipient</span><span class="o">.</span><span class="n">execute_operation</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">reply_operation_executed</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Marek Ziska.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
