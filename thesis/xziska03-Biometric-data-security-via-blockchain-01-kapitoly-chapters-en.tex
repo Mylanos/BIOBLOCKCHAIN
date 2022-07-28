@@ -153,7 +153,7 @@ To prevent data alteration, interceptation, or leakage in transit, biometric sys
 \label{Security vulnerable points description}
 \begin{enumerate}
     \item \textbf{Type 1 attacks.} Usually targets the sensor module and the authentication submission channel. The sensor could be replaced or integrated with an additional sensor controlled by the attacker to forge biometric authentication. Spoofing is the most common attack. Here, the attacker acts as an imposter and presents artificial biometric data to deceive the biometric system authentication. Other known problematic attacks are ``Overloading'', ``Flooding'' or denial of service (DOS). ``Overloading'' is an attempt to circumvent a system by damaging it or overwhelming the sensor to generate errors. 
-     \item \textbf{Type 2 attacks.} Attacks aimed at the channel used to transmit raw biometric data to the feature extraction module. This channel can be intercepted, and transmitted data could be stored for subsequent replay to bypass the sensor. These attacks are known as replay attacks\cite{ReplayAttackDefinition}. In addition to replay attacks, this channel is vulnerable to three other attacks: the eavesdropping attack, the man-in-the-middle attack (MITM), and the brute-force attack.
+     \item \textbf{Type 2 attacks.} Attacks aimed at the channel used to transmit raw biometric data to the feature extraction module. This channel can be intercepted, and transmitted data could be stored for subsequent replay to bypass the sensor. These attacks are known as replay attacks. In addition to replay attacks, this channel is vulnerable to three other attacks: the eavesdropping attack, the man-in-the-middle attack (MITM), and the brute-force attack \cite{ReplayAttackDefinition}.
      \item \textbf{Type 3 attacks.} Also known as attacks on the feature extractor. Here, the attacker might gain control over the feature extractor module, and instead of producing legitimate features, it produces selected features by him. The feature extractor component might as well as the sensor be replaced, resulting in feature processing being done according to the attacker's intentions.
      \item \textbf{Type 4 attacks.} Attack on the communication channel between the feature extractor and the matching module is similar to the second type of attack, vulnerable to replay, MITM, eavesdropping, and brute-force attacks. Again, there is a risk that the attacker can replay intercepted data, in this case, feature values of legitimate users.
     \item \textbf{Type 5 attacks.} In an attack on the matcher module, the attacker can override the automatic process of generating valid match scores and exchange them with an artificial score chosen by the attacker, ignoring the data received from the feature extractor. The hill climbing attack is also one of the potential threats, it is a form of brute-force attack, and in this case it is carried out by iterative submission of synthetic features until a successful match is achieved\cite{HillClimbingAttacks}. Component replacement is again a vulnerable possibility.
@@ -257,7 +257,7 @@ The algorithm expects a minimal number of participating nodes $n$, as shown in E
 
 \newenvironment{conditions}
   {\par\vspace{\abovedisplayskip}\noindent\begin{tabular}{>{$}l<{$} @{${}={}$} l}}
-  {\end{tabular}\par\vspace{\belowdisplayskip}}
+{\end{tabular}\par\vspace{\belowdisplayskip}}
   
 
 \begin{equation}
@@ -278,8 +278,8 @@ The algorithm expects a minimal number of participating nodes $n$, as shown in E
 
 where:
 \begin{conditions}
- $n$     &  number of nodes in the system, where $n \in$ \mathbb{N}\\
- $f$     &  number of faulty nodes, where $f \in$ \mathbb{N}
+ n     &  number of nodes in the system, where $n \in \mathbb{N}$\\
+ f    &  number of faulty nodes, where $f \in \mathbb{N}$
 \end{conditions}
 
 
@@ -329,8 +329,8 @@ The details and phases of the weighted PBFT protocol are described below.
     \end{center}
     where:
     \begin{conditions}
-     $N$     &  total number of nodes in the system, where $N \in \mathbb{N}$\\
-     $\omega_i$     &  weight of a node with index $i$, where $i \in N$
+     N     &  total number of nodes in the system, where $N \in \mathbb{N}$ \\
+     \omega_i    &  weight of a node with index $ i $, where $ i \in N $
     \end{conditions}
     
     \item \textbf{Request:} When node requests a block proposal or transaction validation, it first generates a signed request message that is transmitted to all consensus nodes. All nodes verify the signatures of that message and store it in their log. When the current primary node receives and verifies the request, it will also transmit a \emph{Preprepare} message to all the nodes. The \emph{Preprepare} message contains a hash value of the initial request and other values (view, sequence number) associated with the vote for a new primary node. 
@@ -346,11 +346,11 @@ The details and phases of the weighted PBFT protocol are described below.
     \end{center}
     where:
     \begin{conditions}
-     $N$     &  total number of nodes in the system, where $N \in \mathbb{N}$\\
-     $\omega_{m_{j}}$     &  weight $w$ of a message $m$ sent from $j$-th node, where $j \in N$ and $0\leq\omega_{m_{j}}\geq1$
+     N     &  total number of nodes in the system, where $N \in \mathbb{N}$\\
+     \omega_{m_{j}}    &  weight $w$ of a message $m$ sent from $j$-th node, where $j \in N$ and $0\leq\omega_{m_{j}}\geq1$
     \end{conditions}
     
-    \item \textbf{Commit:} Verification of the message and sender is executed again. The node waits and collects the \emhp{Commit} message until the sufficient weight according to Equation \ref{WeightedPBFTEquationNextPhaseSum} is reached. After reaching the \emhp{Committed} phase, the node is prepared to execute the requested operation (block proposal or transaction validation) from the locally stored data. Subsequently, the operation is executed, a \emph{Reply} message containing the result of the operation is constructed, and transmitted to the current primary node. In case the node does not reach sufficient weight in a certain time interval, the node does not transmit the \emph{Reply} message.
+    \item \textbf{Commit:} Verification of the message and sender is executed again. The node waits and collects the \emph{Commit} message until the sufficient weight according to Equation \ref{WeightedPBFTEquationNextPhaseSum} is reached. After reaching the \emph{Committed} phase, the node is prepared to execute the requested operation (block proposal or transaction validation) from the locally stored data. Subsequently, the operation is executed, a \emph{Reply} message containing the result of the operation is constructed, and transmitted to the current primary node. In case the node does not reach sufficient weight in a certain time interval, the node does not transmit the \emph{Reply} message.
     \item \textbf{Reply:} Here primary node collects all the \emph{Reply} messages and waits until the weight threshold of Equation \ref{WeightedPBFTEquationNextPhaseSum} is reached again. When the primary node has enough \emph{Reply} messages, according to the agreement of the result, the operation is performed globally (e.g. storing template in database or adding block to the blockchain). 
 \end{enumerate}
 
@@ -420,7 +420,7 @@ All modules of the program are implemented in Python language and are documentat
 \end{figure*}
 \section{Main module}
 \label{Main module}
-The \texttt{main.py} module orchestrates the execution of the demonstration scenarios in the \emhp{bioblockchain} program. Firstly, it instantiates the \emph{Parser} class that processes the passed arguments and on their basis determines the execution scenario of the simulator to be demonstrated. Within the demonstration program, we implemented five scenarios. Each can be invoked by its corresponding argument. Additionally, the demonstrator program supports a verbose mode that gives more information about the communication and the data stored in the system. Arguments from given scenarios are not combinable. Only combinations of verbose mode and a certain scenario are allowed. Without specifying the arguments, the program's default phase of operation is the successful enrollment of a new user and his subsequent verification and identification. The list of all supported arguments is as follows.
+The \texttt{main.py} module orchestrates the execution of the demonstration scenarios in the \emph{bioblockchain} program. Firstly, it instantiates the \emph{Parser} class that processes the passed arguments and on their basis determines the execution scenario of the simulator to be demonstrated. Within the demonstration program, we implemented five scenarios. Each can be invoked by its corresponding argument. Additionally, the demonstrator program supports a verbose mode that gives more information about the communication and the data stored in the system. Arguments from given scenarios are not combinable. Only combinations of verbose mode and a certain scenario are allowed. Without specifying the arguments, the program's default phase of operation is the successful enrollment of a new user and his subsequent verification and identification. The list of all supported arguments is as follows.
 \begin{itemize}
     \item \texttt{Help (-h)} - Provides information on the options to run the demonstrator program. 
     \item \texttt{Verbose (--v)} - Provides extended information on network communication and makes it possible to view the contents of the blockchain or the template database after running a certain scenario.
@@ -433,13 +433,13 @@ The \texttt{main.py} module orchestrates the execution of the demonstration scen
 
 \end{itemize}
 \section{Biometric system's operation}
-It is handled with the \emhp{BioBlockchain} and \emhp{Node} modules. The module \texttt{Node} represents a single terminal/node in the system and contains methods that simulate the operation of standard modules in the biometric system \ref{BiometricModules}. 
-The \emhp{BioBlockchain} is a container or interface of the proposed system. It contains a list of all nodes participating in the network, its primary template database, and the blockchain. The list of nodes or network is set up according to the \texttt{NUM\_PARTICIPATING\_NODES} variable in \texttt{config.py}. Variables such as weigh threshold or number of fault tolerance calculated from Equation \ref{PBFTEquationFaultTolerance} are specified here as well. 
+It is handled with the \emph{BioBlockchain} and \emph{Node} modules. The module \texttt{Node} represents a single terminal/node in the system and contains methods that simulate the operation of standard modules in the biometric system \ref{BiometricModules}. 
+The \emph{BioBlockchain} is a container or interface of the proposed system. It contains a list of all nodes participating in the network, its primary template database, and the blockchain. The list of nodes or network is set up according to the \texttt{NUM\_PARTICIPATING\_NODES} variable in \texttt{config.py}. Variables such as weigh threshold or number of fault tolerance calculated from Equation \ref{PBFTEquationFaultTolerance} are specified here as well. 
 
-According to the scenario specified in the main module, the corresponding calls are made to the class methods of \emhp{BioBlockchain}. At first, a node in the network is randomly selected using the \texttt{get\_random\_node} method. This node represents a single terminal that was approached to perform biometric authentication / enrollment as described in Section \ref{BiometricTypicalProcesses}. In addition to that, the \emhp{BioBlockchain} class implements two methods, each simulating a standard biometric process of:
+According to the scenario specified in the main module, the corresponding calls are made to the class methods of \emph{BioBlockchain}. At first, a node in the network is randomly selected using the \texttt{get\_random\_node} method. This node represents a single terminal that was approached to perform biometric authentication / enrollment as described in Section \ref{BiometricTypicalProcesses}. In addition to that, the \emph{BioBlockchain} class implements two methods, each simulating a standard biometric process of:
 \begin{description}
     \item \textbf{Enrollment} (\texttt{run\_enrollment}) - manages the standard operation of the enrollment process in the proposed system. It starts by identifying the process with UUID, retrieved from the static method \texttt{ChainUtils.id} with the use of the \texttt{uuid} standard library. Then the acquisition of biometrics through the sensor is simulated using the \texttt{get\_sensor\_data} method of the randomly selected terminal/node. For the purposes of the demonstator, the biometric collection is simplified to the generation of hashes with \texttt{MD5} from \texttt{hashlib}. The hash is returned and passed to \texttt{feature\_extractor}. Here, extraction is performed with the \texttt{MD5} hashing function in a similar way as before. In this way, the same hash (``template'') is generated from the same input (``biometrics''), thus it is possible to simulate successful feature extraction. Afterward, the method creates two data dictionaries: sensitive data with biometric data paired with the extracted template and operational data. The contents of the operational data are shown in the Listing \ref{FeatureExtractionEnrollmentData}. In addition to basic information on the execution of the feature extraction and the outcome, the operational data dictionary also contains the identifier of a ``user'' who is enrolled. These dictionaries are passed to the \texttt{validate\_decision} method of the \texttt{pbft.py} module, where the data will be evaluated in the distributed network of nodes and eventually the operational data will be stored on the blockchain. In case of successful validation, the extracted template will be stored in the template database as a pair of user's identifier and the extracted template.
-    \begin{lstlisting}[language=json,frame=single,breaklines=true, caption={Transaction data of feature extraction in enrollment.},captionpos=b, label={FeatureExtractionEnrollmentData}]
+    \begin{lstlisting}[frame=single,breaklines=true, caption={Transaction data of feature extraction in enrollment.},captionpos=b, label={FeatureExtractionEnrollmentData}]
      "data": {
         "approached_node": "NODE2",
         "match_timestamp": "12.07.1999",
@@ -452,7 +452,7 @@ According to the scenario specified in the main module, the corresponding calls 
     \end{lstlisting}
     \item \textbf{Authentication} (\texttt{run\_authentication}) - This method simulates both identification and verification depending on the passed \texttt{process} argument. For verification, it is also required to pass an argument with \texttt{claimed\_identity}. The initial phase of the authentication process (feature extraction) remains the same as in enrollment. After the network in the \texttt{PBFT} module reaches consensus and stores the result of the feature extraction operation on the blockchain, the data matching can be performed with the node's \texttt{matcher} method. Here, depending on the type of process, the extracted template is compared with every template stored in the database (identification) with the \texttt{features\_in\_database} method, or only compared to the claimed identity (verification) with the \texttt{claimed\_identity\_in\_database} method. The result of this comparison is the user identifier or \texttt{None}. Here again, all operational data is saved in a dictionary shown in Listing \ref{MatchingIdentificationData}. The template and operational data are then passed to \texttt{validate\_decision}, where the matching result will be evaluated and the operational data will be stored on the blockchain.
     \newpage
-    \begin{lstlisting}[language=json,frame=single,breaklines=true, caption={Transaction data of feature extraction in enrollment.},captionpos=b, label={MatchingIdentificationData}]
+    \begin{lstlisting}[frame=single,breaklines=true, caption={Transaction data of feature extraction in enrollment.},captionpos=b, label={MatchingIdentificationData}]
     "data": {
         "approached_node": "NODE2",
         "match_timestamp": "12.07.1999",
@@ -473,7 +473,7 @@ Cryptographic functionalities are implemented with the easy-to-use Python librar
 This module is the foundation for most of the cryptographic mechanisms implemented in the program. It contains two parameters that store the public and/or private keys of some entity in the system (the nodes participating in the network or enrolled users in the biometric system). The private key / signing is acquired from a static function \texttt{generate\_key\_from\_seed} that takes a certain \texttt{seed} as argument. The seed is needed to generate a secret exponent \texttt{secexp} by calling a \texttt{randrange\_from\_seed\_trytryagain} method with two arguments: the seed and the \texttt{NIST256p} curve used to generate the secret exponent. Subsequently, the secret exponent is used to instantiate a \texttt{SigningKey} class by invoking the method \texttt{from\_secret\_exponent}. The \texttt{SigningKey} class then allows the creation of the associated \texttt{VerifyingKey} that is used to verify the signatures made by the \texttt{SigningKey}. Data signing is performed in \texttt{ChainUtils.sign}. To sign the data we need its digital hash digest representation. The hash digests are calculated in \texttt{ChainUtils.hash} with the \texttt{sha256} method from \texttt{hashlib}. The data signature is then obtained with the \texttt{SigningKey}s method \texttt{sign\_digest\_deterministic}. Verification of signatures is done using the static method \texttt{ChainUtils.verify\_signature}. This method takes two arguments: signed data, signature, and verifying key. The signed data must first be converted to the \texttt{bytes} data type. Subsequently, the previously created \texttt{VerifyingKey} provides a method for verifying the signature of the given data. 
 \subsection{Blockchain and transactions}
 The \texttt{Blockchain} class has a list of blocks and provides methods for the creation, verification, and addition of blocks to the blockchain. Since blocks are cryptographically bound together, the blockchain is initialized with the genesis block. The \texttt{Block} class represents a single block on the blockchain, each having its own hash value, hash of the previous block, the proposer's public key, signature, data/transactions payload, and other accompanying information (see Listing \ref{BlockchainData}). All cryptographic operations are implemented using methods previously described in Section \ref{Cryptographic operations}, and timestamps are acquired with the library \texttt{datetime}.
-\begin{lstlisting}[language=json,frame=single,breaklines=false, caption={Two blocks chained together to form blockchain.},captionpos=b, label={BlockchainData}]
+\begin{lstlisting}[frame=single,breaklines=false, caption={Two blocks chained together to form blockchain.},captionpos=b, label={BlockchainData}]
 - - - - - - - - - - - - - - - - - Block - - - - - - - - - - - - - - - - -
 Timestamp   : 18/06/2022 16:16:18
 Last Hash   : dda9024382573e0a13da84e1e2f3ab7d5a614296ad3edeb79b2a4c366abe
