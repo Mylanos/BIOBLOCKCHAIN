@@ -5,8 +5,8 @@ All modules of the program are implemented in Python language and are documentat
 
  ## HOW TO RUN
   - python3 -m venv .venv -> creates new empty venv
-  - make install -> installs requirements.txt into venv
   - source .venv/bin/activate -> activates created venv
+  - make install -> installs requirements.txt into venv
   - make run -> run simulator script with default operation (success enrollment and verification/identification)
   - make tests -> runs unit tests
   - make help -> shows help describing how to run the program with all possible arguments
